@@ -117,26 +117,23 @@ class App extends StatelessWidget {
                   index: "EUR",
                   icon: Icons.euro_rounded,
                   isInverted: false,
+                  order: 0,
                 ),
-                Transform.translate(
-                  offset: const Offset(0, -20),
-                  child: const MyCard(
-                    name: "Bitcoin",
-                    balance: "3.24",
-                    index: "BTC",
-                    icon: Icons.currency_bitcoin_rounded,
-                    isInverted: true,
-                  ),
+                const MyCard(
+                  name: "Bitcoin",
+                  balance: "3.24",
+                  index: "BTC",
+                  icon: Icons.currency_bitcoin_rounded,
+                  isInverted: true,
+                  order: 1,
                 ),
-                Transform.translate(
-                  offset: const Offset(0, -40),
-                  child: const MyCard(
-                    name: "Dollar",
-                    balance: "100",
-                    index: "USD",
-                    icon: Icons.attach_money_rounded,
-                    isInverted: false,
-                  ),
+                const MyCard(
+                  name: "Dollar",
+                  balance: "100",
+                  index: "USD",
+                  icon: Icons.attach_money_rounded,
+                  isInverted: false,
+                  order: 2,
                 )
               ],
             ),
