@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pika_client_flutter/widgets/button.dart';
 
 void main() {
   runApp(const App());
@@ -11,10 +12,10 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          backgroundColor: const Color(0xFF181818),
+          backgroundColor: Colors.black,
           body: Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: 15,
+                horizontal: 10,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,24 +67,17 @@ class App extends StatelessWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                  Row(
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              color: Colors.amber),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 20,
-                              horizontal: 40,
-                            ),
-                            child: Text(
-                              "Transfer",
-                              style: TextStyle(
-                                fontSize: 22,
-                              ),
-                            ),
-                          )),
+                      MyButton(
+                          text: "Transfer",
+                          backgroundColor: Colors.amber,
+                          textColor: Colors.black),
+                      MyButton(
+                          text: "Request",
+                          backgroundColor: Color(0xFF1F2123),
+                          textColor: Colors.white)
                     ],
                   )
                 ],
