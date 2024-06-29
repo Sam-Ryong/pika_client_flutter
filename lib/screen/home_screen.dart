@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -8,10 +10,25 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int totalSeconds = 1500;
+  late Timer timer;
+  void onTick(Timer timer) {
+    setState(() {
+      totalSeconds = totalSeconds - 1;
+    });
+  }
+
+  void onStartPressed() {
+    timer = Timer.periodic(
+      const Duration(seconds: 1),
+      onTick,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: Column(
           children: [
             Flexible(
@@ -19,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 alignment: Alignment.bottomCenter,
                 child: Text(
-                  "25:00",
+                  "$totalSeconds",
                   style: TextStyle(
                     color: Theme.of(context).textTheme.displayLarge?.color,
                     fontSize: 89,
@@ -35,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Theme.of(context).cardColor,
                   iconSize: 98,
                   icon: const Icon(Icons.play_circle_outline),
-                  onPressed: () {},
+                  onPressed: onStartPressed,
                 ),
               ),
             ),
@@ -46,8 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                      ),
+                          color: Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(25)),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
