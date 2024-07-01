@@ -12,12 +12,23 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int totalSeconds = 1500;
   bool isRunning = false;
+  int totalPomodoros = 0;
+
   late Timer timer;
 
   void onTick(Timer timer) {
-    setState(() {
-      totalSeconds = totalSeconds - 1;
-    });
+    if (totalSeconds == 0) {
+      setState(() {
+        totalSeconds = 1500;
+        isRunning = false;
+        totalPomodoros = totalPomodoros + 1;
+      });
+      timer.cancel();
+    } else {
+      setState(() {
+        totalSeconds = totalSeconds - 1;
+      });
+    }
   }
 
   void onStartPressed() {
@@ -37,6 +48,20 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void onResetPressed() {
+    timer.cancel();
+    setState(() {
+      totalSeconds = 1500;
+      isRunning = false;
+    });
+  }
+
+  String format(int seconds) {
+    var duration = Duration(seconds: seconds);
+    var temp = duration.toString().split(".").first.split(":");
+    return "${temp[1]}:${temp[2]}";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 alignment: Alignment.bottomCenter,
                 child: Text(
-                  "$totalSeconds",
+                  format(totalSeconds),
                   style: TextStyle(
                     color: Theme.of(context).textTheme.displayLarge?.color,
                     fontSize: 89,
@@ -68,6 +93,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       : const Icon(Icons.pause_circle_outline),
                   onPressed: !isRunning ? onStartPressed : onPausePressed,
                 ),
+              ),
+            ),
+            Transform.translate(
+              offset: const Offset(0, -120),
+              child: IconButton(
+                color: Theme.of(context).cardColor,
+                iconSize: 45,
+                icon: const Icon(Icons.restore),
+                onPressed: onResetPressed,
               ),
             ),
             Flexible(
@@ -94,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           Text(
-                            '0',
+                            "$totalPomodoros",
                             style: TextStyle(
                               fontSize: 60,
                               fontWeight: FontWeight.w600,
