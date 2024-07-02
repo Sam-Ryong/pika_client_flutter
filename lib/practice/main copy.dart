@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pika_client_flutter/screen/home_screen.dart';
+import 'package:pika_client_flutter/practice/screen/home_screen.dart';
 
 void main() {
   runApp(const App());

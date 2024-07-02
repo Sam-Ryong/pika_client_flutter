@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:pika_client_flutter/screens/home_screen.dart';
-import 'package:pika_client_flutter/services/api_service.dart';
+import 'package:flutter/services.dart';
+import "package:flame/game.dart";
+import 'package:pika_client_flutter/game.dart';
 
 void main() {
-  ApiService.getTodaysToons();
-  runApp(const App());
-}
-
-class App extends StatelessWidget {
-  const App({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomeScreen(),
-    );
-  }
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+  runApp(
+    GameWidget(
+      game: VolleyballGame(),
+      overlayBuilderMap: {
+        'PauseMenu': (context, game) {
+          return Container(
+            color: const Color(0xFF000000),
+            child: Text('A pause menu'),
+          );
+        },
+      },
+    ),
+  );
 }

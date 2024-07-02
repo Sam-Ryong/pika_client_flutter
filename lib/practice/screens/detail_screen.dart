@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pika_client_flutter/models/webtoon_detail_model.dart';
 import 'package:pika_client_flutter/models/webtoon_episode_model.dart';
-import 'package:pika_client_flutter/services/api_service.dart';
-import 'package:pika_client_flutter/widgets/episode_widget.dart';
+import 'package:pika_client_flutter/practice/services/api_service.dart';
+import 'package:pika_client_flutter/practice/widgets/episode_widget.dart';
 
 class DetailScreen extends StatefulWidget {
   final String title, thumb, id;

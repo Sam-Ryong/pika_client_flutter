@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pika_client_flutter/screens/detail_screen.dart';
+import 'package:pika_client_flutter/practice/screens/detail_screen.dart';
 
 class Webtoon extends StatelessWidget {
   final String title, thumb, id;
