@@ -5,7 +5,8 @@ import 'package:flame/input.dart';
 import 'package:flame/collisions.dart';
 import 'package:pika_client_flutter/controller/web_socket_controller.dart';
 
-class VolleyballGame extends FlameGame with TapDetector, HasCollisionDetection {
+class VolleyballGame extends FlameGame
+    with PanDetector, TapDetector, HasCollisionDetection {
   late Player player1;
   late Player player2;
   late Ball ball;
@@ -40,18 +41,6 @@ class VolleyballGame extends FlameGame with TapDetector, HasCollisionDetection {
     sendPositions();
   }
 
-  @override
-  void onTapDown(TapDownInfo info) {
-    super.onTapDown(info);
-    final tapPosition = info.eventPosition.global;
-    if (tapPosition.x < size.x / 2) {
-      player1.position = tapPosition - player1.size / 2;
-    } else {
-      player2.position = tapPosition - player2.size / 2;
-    }
-    sendPositions();
-  }
-
   void sendPositions() {
     final player1Pos = 'Player1: ${player1.position}';
     final player2Pos = 'Player2: ${player2.position}';
@@ -67,6 +56,30 @@ class VolleyballGame extends FlameGame with TapDetector, HasCollisionDetection {
     // 게임이 종료될 때 웹 소켓 연결을 닫음
     webSocketManager.close();
     super.onRemove();
+  }
+
+  void movePlayer1Left() {
+    if (player1.position.x > 0) {
+      player1.position.x -= 10;
+    }
+  }
+
+  void movePlayer1Right() {
+    if (player1.position.x < size.x - player1.size.x) {
+      player1.position.x += 10;
+    }
+  }
+
+  void movePlayer1Up() {
+    if (player1.position.y > 0) {
+      player1.position.y -= 10;
+    }
+  }
+
+  void movePlayer1Down() {
+    if (player1.position.y < size.y - player1.size.y) {
+      player1.position.y += 10;
+    }
   }
 }
 
