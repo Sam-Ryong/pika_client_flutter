@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import "package:flame/game.dart";
-import 'package:pika_client_flutter/game.dart';
+import 'package:pika_client_flutter/hostgame.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
