@@ -38,9 +38,9 @@ class VolleyballGame extends FlameGame
       if (!ball.isReflecting) {
         ball.isReflecting = true;
         ball.velocity.x = -ball.velocity.x;
-      } else {
-        ball.isReflecting = false;
       }
+    } else {
+      ball.isReflecting = false;
     }
     if (ball.position.y < 0 || ball.position.y > size.y - ball.size.y) {
       if (!ball.isReflecting) {
@@ -60,6 +60,12 @@ class VolleyballGame extends FlameGame
       player1.position.y = size.y - player1.size.y;
       player1.isjumping = false;
       player1.velocity.y = 0;
+    }
+
+    if (player1.position.x < 0) {
+      player1.position.x = 0;
+    } else if (player1.position.x > size.x - player1.size.x) {
+      player1.position.x = size.x - player1.size.x;
     }
     sendPositions();
   }
