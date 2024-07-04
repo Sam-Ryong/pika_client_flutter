@@ -38,8 +38,6 @@ class MyApp extends StatelessWidget {
 class VolleyballGameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final Size screenSize = MediaQuery.of(context).size;
-    final Vector2 gamesize = Vector2(432, 305);
     final VolleyballGame game = VolleyballGame();
     return GestureDetector(
       behavior: HitTestBehavior.opaque,

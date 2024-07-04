@@ -4,6 +4,7 @@ import 'package:flame/collisions.dart';
 import 'package:flutter/material.dart';
 import 'package:pika_client_flutter/controller/web_socket_controller.dart';
 import 'package:pika_client_flutter/map/map.dart';
+import 'package:pika_client_flutter/objects/player.dart';
 
 class VolleyballGame extends FlameGame {
   late Player player1;
@@ -21,14 +22,9 @@ class VolleyballGame extends FlameGame {
   @override
   Color backgroundColor() => const Color(0xFFeeeeee);
 
-  //@override
-  //Vector2 size;
-
-  // VolleyballGame(this.size);
-
   @override
   Future<void> onLoad() async {
-    super.onLoad();
+    await images.loadAllImages();
     cam = CameraComponent.withFixedResolution(
       world: world,
       width: 432,
@@ -41,13 +37,14 @@ class VolleyballGame extends FlameGame {
     player1 = Player(Vector2(screenSize.x / 4, screenSize.y - 100));
     player2 = Player(Vector2(3 * screenSize.x / 4, screenSize.y - 100));
     ball = Ball(Vector2(screenSize.x / 2, screenSize.y / 2 - 150));
-    add(player1);
     add(player2);
     add(ball);
     add(cam);
     add(world);
 
     webSocketManager = WebSocketController('ws://192.168.0.103:3000');
+
+    return super.onLoad();
   }
 
   @override

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="54" height="38" tilewidth="8" tileheight="8" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="54" height="38" tilewidth="8" tileheight="8" infinite="0" nextlayerid="3" nextobjectid="13">
  <tileset firstgid="1" source="Bitmap106-8.tsx"/>
  <layer id="1" name="Tile Layer 1" width="54" height="38">
   <data encoding="csv">
@@ -43,4 +43,7 @@
 55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56
 </data>
  </layer>
+ <objectgroup id="2" name="Player1">
+  <object id="10" name="PikaPlayer" type="PikaPlayer" x="0.5" y="203" width="64.5" height="60.5"/>
+ </objectgroup>
 </map>
