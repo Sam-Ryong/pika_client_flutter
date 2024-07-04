@@ -39,6 +39,11 @@ class VolleyballGame extends FlameGame
     if (ball.position.y < 0 || ball.position.y > size.y - ball.size.y) {
       ball.velocity.y = -ball.velocity.y;
     }
+
+    // 플레이어가 공중에 있을 때 처리
+    if (player1.position.y < size.y - player1.size.y) {
+      player1.position.y = player1.position.y + 0.5 + gravity * dt * dt;
+    }
     sendPositions();
   }
 
@@ -87,6 +92,7 @@ class VolleyballGame extends FlameGame
 class Player extends SpriteComponent
     with HasGameRef<VolleyballGame>, CollisionCallbacks {
   Player(Vector2 position) : super(position: position, size: Vector2(50, 50));
+  Vector2 velocity = Vector2(0, 0);
 
   @override
   Future<void> onLoad() async {
@@ -106,7 +112,7 @@ class Player extends SpriteComponent
 
 class Ball extends SpriteComponent
     with HasGameRef<VolleyballGame>, CollisionCallbacks {
-  Vector2 velocity = Vector2(500, 0); // 초기 속도 (y축 속도는 0으로 시작)
+  Vector2 velocity = Vector2(0, 0); // 초기 속도 (y축 속도는 0으로 시작)
 
   Ball(Vector2 position) : super(position: position, size: Vector2(30, 30));
 
@@ -118,11 +124,13 @@ class Ball extends SpriteComponent
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    double loss = 0.8;
     super.onCollision(intersectionPoints, other);
     if (other is Player) {
       final intersection = intersectionPoints.first;
       if (intersection.y < other.position.y + 10) {
         // 위쪽 히트박스에 충돌
+        velocity.y = velocity.y * loss;
         velocity.y = -velocity.y.abs(); // 위쪽으로 반사
       } else if (intersection.x < other.position.x + 16) {
         // 왼쪽 히트박스에 충돌
