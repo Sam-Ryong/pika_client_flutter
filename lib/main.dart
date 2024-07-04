@@ -74,7 +74,7 @@ class DirectionControls extends StatelessWidget {
         ),
       ),
       stick: JoystickStick(
-        size: 20,
+        size: 45,
         decoration: JoystickStickDecoration(
             color: Colors.grey, shadowColor: Colors.yellow.withOpacity(0.5)),
       ),

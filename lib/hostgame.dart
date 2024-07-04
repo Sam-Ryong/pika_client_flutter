@@ -1,5 +1,4 @@
 import 'package:flame/components.dart';
-import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame/collisions.dart';
@@ -11,6 +10,7 @@ class VolleyballGame extends FlameGame
   late Player player2;
   late Ball ball;
   late WebSocketController webSocketManager;
+  int gravity = 500;
 
   @override
   Future<void> onLoad() async {
@@ -30,6 +30,7 @@ class VolleyballGame extends FlameGame
   void update(double dt) {
     super.update(dt);
     ball.position += ball.velocity * dt;
+    ball.velocity.y += gravity * dt;
 
     // 경계 충돌 처리
     if (ball.position.x < 0 || ball.position.x > size.x - ball.size.x) {
@@ -105,7 +106,7 @@ class Player extends SpriteComponent
 
 class Ball extends SpriteComponent
     with HasGameRef<VolleyballGame>, CollisionCallbacks {
-  Vector2 velocity = Vector2(300, 300); // 초기 속도 (y축 속도는 0으로 시작)
+  Vector2 velocity = Vector2(500, 0); // 초기 속도 (y축 속도는 0으로 시작)
 
   Ball(Vector2 position) : super(position: position, size: Vector2(30, 30));
 
