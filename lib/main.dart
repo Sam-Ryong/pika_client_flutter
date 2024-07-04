@@ -1,7 +1,7 @@
-import 'package:flame/src/gestures/events.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import "package:flame/game.dart";
+import 'package:flutter_joystick/flutter_joystick.dart';
 import 'package:pika_client_flutter/hostgame.dart';
 
 void main() {
@@ -48,8 +48,8 @@ class VolleyballGameWidget extends StatelessWidget {
         children: [
           GameWidget(game: game),
           Positioned(
-            left: 20,
-            bottom: 20,
+            left: 100,
+            bottom: 50,
             child: DirectionControls(game: game),
           ),
         ],
@@ -65,56 +65,30 @@ class DirectionControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        GestureDetector(
-          onTap: () {
-            game.movePlayer1Left();
-          },
-          child: Container(
-            width: 50,
-            height: 50,
-            color: Colors.blue,
-            child: Icon(Icons.arrow_back),
-          ),
+    return Joystick(
+      includeInitialAnimation: false,
+      base: JoystickBase(
+        size: 100,
+        decoration: JoystickBaseDecoration(
+          color: Colors.grey.withOpacity(0.5),
         ),
-        SizedBox(width: 10),
-        GestureDetector(
-          onTap: () {
-            game.movePlayer1Right();
-          },
-          child: Container(
-            width: 50,
-            height: 50,
-            color: Colors.blue,
-            child: Icon(Icons.arrow_forward),
-          ),
-        ),
-        SizedBox(width: 10),
-        GestureDetector(
-          onTap: () {
-            game.movePlayer1Up();
-          },
-          child: Container(
-            width: 50,
-            height: 50,
-            color: Colors.blue,
-            child: Icon(Icons.arrow_upward),
-          ),
-        ),
-        SizedBox(width: 10),
-        GestureDetector(
-          onTap: () {
-            game.movePlayer1Down();
-          },
-          child: Container(
-            width: 50,
-            height: 50,
-            color: Colors.blue,
-            child: Icon(Icons.arrow_downward),
-          ),
-        ),
-      ],
+      ),
+      stick: JoystickStick(
+        size: 20,
+        decoration: JoystickStickDecoration(
+            color: Colors.grey, shadowColor: Colors.yellow.withOpacity(0.5)),
+      ),
+      listener: (details) {
+        if (details.x > 0.8) {
+          game.movePlayer1Right();
+        }
+        if (details.x < -0.8) {
+          game.movePlayer1Left();
+        }
+        if (details.y < -0.5) {
+          game.movePlayer1Up();
+        }
+      },
     );
   }
 }

@@ -7,7 +7,6 @@ class WebSocketController {
     channel = WebSocketChannel.connect(Uri.parse(url));
     channel.stream.listen(
       (message) {
-        print('Received: $message');
         // 여기에서 메시지를 처리할 수 있습니다.
       },
       onError: (error) {
@@ -20,7 +19,6 @@ class WebSocketController {
   }
 
   void sendMessage(String message) {
-    print('Sending message: $message');
     channel.sink.add(message);
   }
 
