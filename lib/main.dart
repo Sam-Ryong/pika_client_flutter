@@ -79,14 +79,17 @@ class DirectionControls extends StatelessWidget {
             color: Colors.grey, shadowColor: Colors.yellow.withOpacity(0.5)),
       ),
       listener: (details) {
-        if (details.x > 0.8) {
+        if (details.x > 0.5) {
           game.movePlayer1Right();
         }
-        if (details.x < -0.8) {
+        if (details.x < -0.5) {
           game.movePlayer1Left();
         }
         if (details.y < -0.5) {
           game.movePlayer1Up();
+        }
+        if (details.x <= 0.5 && details.x >= -0.5 && details.y >= -0.5) {
+          game.nothing();
         }
       },
     );
