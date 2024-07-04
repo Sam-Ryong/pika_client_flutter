@@ -35,11 +35,21 @@ class VolleyballGame extends FlameGame
 
     // 경계 충돌 처리
     if (ball.position.x < 0 || ball.position.x > size.x - ball.size.x) {
-      ball.velocity.x = -ball.velocity.x;
+      if (!ball.isReflecting) {
+        ball.isReflecting = true;
+        ball.velocity.x = -ball.velocity.x;
+      } else {
+        ball.isReflecting = false;
+      }
     }
     if (ball.position.y < 0 || ball.position.y > size.y - ball.size.y) {
-      ball.velocity.y = -ball.velocity.y;
-      ball.velocity.y += gravity * dt;
+      if (!ball.isReflecting) {
+        ball.isReflecting = true;
+        ball.velocity.y = -ball.velocity.y;
+        ball.velocity.y += gravity * dt;
+      }
+    } else {
+      ball.isReflecting = false;
     }
 
     // 플레이어가 공중에 있을 때 처리
@@ -105,7 +115,7 @@ class VolleyballGame extends FlameGame
 
 class Player extends SpriteComponent
     with HasGameRef<VolleyballGame>, CollisionCallbacks {
-  Player(Vector2 position) : super(position: position, size: Vector2(50, 50));
+  Player(Vector2 position) : super(position: position, size: Vector2(100, 100));
   Vector2 velocity = Vector2(0, 0);
 
   bool isjumping = false;
@@ -122,8 +132,8 @@ class Player extends SpriteComponent
 class Ball extends SpriteComponent
     with HasGameRef<VolleyballGame>, CollisionCallbacks {
   Vector2 velocity = Vector2(0, 0); // 초기 속도 (y축 속도는 0으로 시작)
-
-  Ball(Vector2 position) : super(position: position, size: Vector2(30, 30));
+  bool isReflecting = false;
+  Ball(Vector2 position) : super(position: position, size: Vector2(100, 100));
 
   @override
   Future<void> onLoad() async {
@@ -139,7 +149,7 @@ class Ball extends SpriteComponent
       if (intersection.y < other.position.y + 10) {
         // 위쪽 히트박스에 충돌
         velocity.y = -velocity.y.abs(); // 위쪽으로 반사
-        velocity.x = (intersection.x - other.position.x);
+        velocity.x = 5 * (position.x - other.position.x);
       }
     }
   }
