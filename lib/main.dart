@@ -1,3 +1,4 @@
+import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import "package:flame/game.dart";
@@ -6,6 +7,8 @@ import 'package:pika_client_flutter/hostgame.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  Flame.device.fullScreen;
+  Flame.device.setLandscape();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
@@ -33,10 +36,11 @@ class MyApp extends StatelessWidget {
 }
 
 class VolleyballGameWidget extends StatelessWidget {
-  final VolleyballGame game = VolleyballGame();
-
   @override
   Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
+    final Vector2 gamesize = Vector2(432, 305);
+    final VolleyballGame game = VolleyballGame();
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       /*
@@ -46,9 +50,11 @@ class VolleyballGameWidget extends StatelessWidget {
       */
       child: Stack(
         children: [
-          GameWidget(game: game),
+          GameWidget(
+            game: game,
+          ),
           Positioned(
-            left: 100,
+            right: 100,
             bottom: 50,
             child: DirectionControls(game: game),
           ),

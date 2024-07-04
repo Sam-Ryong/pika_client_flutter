@@ -9,12 +9,8 @@ class WebSocketController {
       (message) {
         // 여기에서 메시지를 처리할 수 있습니다.
       },
-      onError: (error) {
-        print('WebSocket error: $error');
-      },
-      onDone: () {
-        print('WebSocket closed');
-      },
+      onError: (error) {},
+      onDone: () {},
     );
   }
 

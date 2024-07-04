@@ -1,29 +1,53 @@
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
-import 'package:flame/input.dart';
 import 'package:flame/collisions.dart';
+import 'package:flutter/material.dart';
 import 'package:pika_client_flutter/controller/web_socket_controller.dart';
+import 'package:pika_client_flutter/map/map.dart';
 
-class VolleyballGame extends FlameGame
-    with PanDetector, TapDetector, HasCollisionDetection {
+class VolleyballGame extends FlameGame {
   late Player player1;
   late Player player2;
   late Ball ball;
   late WebSocketController webSocketManager;
+
+  late final CameraComponent cam;
+
+  @override
+  final world = PikaMap();
+
   int gravity = 500;
+
+  @override
+  Color backgroundColor() => const Color(0xFFeeeeee);
+
+  //@override
+  //Vector2 size;
+
+  // VolleyballGame(this.size);
 
   @override
   Future<void> onLoad() async {
     super.onLoad();
-
-    player1 = Player(Vector2(100, size.y - 50));
-    player2 = Player(Vector2(size.x - 100, size.y - 50));
-    ball = Ball(Vector2(size.x / 2, size.y / 2));
-
+    cam = CameraComponent.withFixedResolution(
+      world: world,
+      width: 432,
+      height: 304,
+    );
+    cam.viewfinder.anchor = Anchor.topLeft;
+    final screenSize = size;
+    // 화면 크기를 불러옴
+    // 화면 중앙에 맞추기 위해 플레이어와 공의 초기 위치를 설정
+    player1 = Player(Vector2(screenSize.x / 4, screenSize.y - 100));
+    player2 = Player(Vector2(3 * screenSize.x / 4, screenSize.y - 100));
+    ball = Ball(Vector2(screenSize.x / 2, screenSize.y / 2 - 150));
     add(player1);
     add(player2);
     add(ball);
-    webSocketManager = WebSocketController('ws://10.0.2.2:3000');
+    add(cam);
+    add(world);
+
+    webSocketManager = WebSocketController('ws://192.168.0.103:3000');
   }
 
   @override
@@ -34,27 +58,22 @@ class VolleyballGame extends FlameGame
     player1.position += player1.velocity * dt;
 
     // 경계 충돌 처리
-    if (ball.position.x < 0 || ball.position.x > size.x - ball.size.x) {
-      if (!ball.isReflecting) {
-        ball.isReflecting = true;
-        ball.velocity.x = -ball.velocity.x;
-      }
-    } else {
-      ball.isReflecting = false;
+    if (ball.position.x < 0) {
+      ball.velocity.x = ball.velocity.x.abs();
+    } else if (ball.position.x > size.x - ball.size.x) {
+      ball.velocity.x = -ball.velocity.x.abs();
     }
-    if (ball.position.y < 0 || ball.position.y > size.y - ball.size.y) {
-      if (!ball.isReflecting) {
-        ball.isReflecting = true;
-        ball.velocity.y = -ball.velocity.y;
-        ball.velocity.y += gravity * dt;
-      }
-    } else {
-      ball.isReflecting = false;
+
+    if (ball.position.y < 0) {
+      ball.velocity.y = ball.velocity.y.abs();
+      ball.velocity.y += gravity * dt;
+    } else if (ball.position.y > size.y - ball.size.y) {
+      ball.velocity.y = -ball.velocity.y.abs();
+      ball.velocity.y += gravity * dt;
     }
 
     // 플레이어가 공중에 있을 때 처리
     if (player1.position.y < size.y - player1.size.y) {
-      //player1.position += player1.velocity * dt;
       player1.velocity.y += gravity * dt;
     } else {
       player1.position.y = size.y - player1.size.y;
@@ -138,7 +157,6 @@ class Player extends SpriteComponent
 class Ball extends SpriteComponent
     with HasGameRef<VolleyballGame>, CollisionCallbacks {
   Vector2 velocity = Vector2(0, 0); // 초기 속도 (y축 속도는 0으로 시작)
-  bool isReflecting = false;
   Ball(Vector2 position) : super(position: position, size: Vector2(100, 100));
 
   @override

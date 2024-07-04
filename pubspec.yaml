@@ -31,6 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   flame: ^1.0.0
+  flame_tiled: ^1.20.2
   http: ^0.13.5
   web_socket_channel: ^2.0.0
   flutter_joystick: ^0.2.0
@@ -64,6 +65,10 @@ flutter:
     #  - assets/audio/explosion.mp3
     - lib/assets/images/player.bmp
     - lib/assets/images/ball.bmp
+    - assets/images/player.bmp
+    - assets/images/ball.bmp
+    - assets/tiles/
+    - assets/images/
   #  - assets/images/enemy.png
   #  - assets/tiles/level.tmx
 
