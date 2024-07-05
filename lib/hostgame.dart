@@ -3,8 +3,8 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:pika_client_flutter/controller/web_socket_controller.dart';
-import 'package:pika_client_flutter/map/map.dart';
-import 'package:pika_client_flutter/objects/player.dart';
+import 'package:pika_client_flutter/components/map.dart';
+import 'package:pika_client_flutter/components/player.dart';
 
 class VolleyballGame extends FlameGame
     with HasKeyboardHandlerComponents, DragCallbacks {
@@ -12,7 +12,7 @@ class VolleyballGame extends FlameGame
   PikaPlayer host = PikaPlayer();
   late final CameraComponent cam;
   late JoystickComponent joystick;
-  bool showJoystick = true;
+  bool showJoystick = false;
 
   int gravity = 500;
 
@@ -85,17 +85,27 @@ class VolleyballGame extends FlameGame
   void updateJoyStick() {
     switch (joystick.direction) {
       case JoystickDirection.left:
+        host.horizontalMovement = -1;
+        break;
       case JoystickDirection.downLeft:
+        host.horizontalMovement = -1;
+        break;
       case JoystickDirection.upLeft:
-        host.playerDirection = PlayerDirection.left;
+        host.isJumped = true;
+        host.horizontalMovement = -1;
         break;
       case JoystickDirection.right:
+        host.horizontalMovement = 1;
+        break;
       case JoystickDirection.downRight:
+        host.horizontalMovement = 1;
+        break;
       case JoystickDirection.upRight:
-        host.playerDirection = PlayerDirection.right;
+        host.isJumped = true;
+        host.horizontalMovement = 1;
         break;
       default:
-        host.playerDirection = PlayerDirection.none;
+        host.horizontalMovement = 0;
         //idle
         break;
     }
