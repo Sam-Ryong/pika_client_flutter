@@ -28,7 +28,6 @@ class PikaMap extends World {
     add(map);
 
     _spawningObjects();
-    _addCollision();
     scrollingBackground();
     return super.onLoad();
   }
@@ -105,8 +104,7 @@ class PikaMap extends World {
     }
 
     ball.collisionBlocks = collisionBlocks;
+
     player.collisionBlocks = collisionBlocks;
   }
-
-  void _addCollision() {}
 }

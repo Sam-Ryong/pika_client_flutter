@@ -91,7 +91,7 @@ class VolleyballGame extends FlameGame
         host.horizontalMovement = -1;
         break;
       case JoystickDirection.upLeft:
-        host.isJumped = true;
+        host.isJumping = true;
         host.horizontalMovement = -1;
         break;
       case JoystickDirection.right:
@@ -101,7 +101,7 @@ class VolleyballGame extends FlameGame
         host.horizontalMovement = 1;
         break;
       case JoystickDirection.upRight:
-        host.isJumped = true;
+        host.isJumping = true;
         host.horizontalMovement = 1;
         break;
       default:

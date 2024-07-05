@@ -14,3 +14,17 @@ bool checkCollision(player, block) {
 
   return (py < by + bh && py + ph > by && fx < bx + bw && fx + pw > bx);
 }
+
+bool checkCollisionWithObjects(ball, player) {
+  final px = player.position.x;
+  final py = player.position.y;
+  final pw = player.width;
+  final ph = player.height;
+
+  final bx = ball.x;
+  final by = ball.y;
+  final bw = ball.width;
+  final bh = ball.height;
+
+  return (py < by + bh && py + ph > by && px < bx + bw && px + pw > bx);
+}

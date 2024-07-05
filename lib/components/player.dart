@@ -30,9 +30,14 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   final double _gravity = 9.8;
   final double _jumpforce = 300;
   final double _terminalVelocity = 300;
-
+  int isFacingRight = 1;
   bool isOnGround = true;
-  bool isJumped = false;
+  bool startJump = false;
+  bool isJumping = false;
+  bool endJump = true;
+  bool startDash = false;
+  bool isDashing = false;
+  bool endDash = true;
   double moveSpeed = 100;
   Vector2 velocity = Vector2(0, 0);
   List<CollisionBlock> collisionBlocks = [];
@@ -71,7 +76,17 @@ class PikaPlayer extends SpriteAnimationGroupComponent
         keysPressed.contains(LogicalKeyboardKey.arrowRight);
     horizontalMovement += isLeftKeyPressed ? -1 : 0;
     horizontalMovement += isRightKeyPressed ? 1 : 0;
-    isJumped = keysPressed.contains(LogicalKeyboardKey.arrowUp);
+    if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
+      isJumping = true;
+      isDashing = false;
+    } else if (keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
+      isJumping = false;
+      isDashing = true;
+    } else {
+      isJumping = false;
+      isDashing = false;
+    }
+
     return super.onKeyEvent(event, keysPressed);
   }
 
@@ -84,7 +99,7 @@ class PikaPlayer extends SpriteAnimationGroupComponent
     idleAnimation = _spriteAnimation("idle", 9, 0.2);
     jumpAnimation = _spriteAnimation("jump", 8, 0.05);
     spikeAnimation = _spriteAnimation("spike", 8, 0.05);
-    dashAnimation = _spriteAnimation("dash", 3, 0.05);
+    dashAnimation = _spriteAnimation("dash", 3, 0.2);
     winAnimation = _spriteAnimation("win", 5, 0.05);
     loseAnimation = _spriteAnimation("lose", 5, 0.05);
 
@@ -115,29 +130,70 @@ class PikaPlayer extends SpriteAnimationGroupComponent
 
   void _updatePlayerState() {
     PlayerState playerState = PlayerState.idle;
+
     if (velocity.x < 0 && scale.x > 0) {
+      isFacingRight = -1;
       flipHorizontallyAroundCenter();
     } else if (velocity.x > 0 && scale.x < 0) {
+      isFacingRight = 1;
       flipHorizontallyAroundCenter();
     }
-    if (!isOnGround) playerState = PlayerState.jump;
+    if (endJump && isDashing) {
+      playerState = PlayerState.dash;
+    } else if (endDash && isJumping) {
+      playerState = PlayerState.jump;
+    } else if (!isOnGround) {
+      if (endDash) {
+        playerState = PlayerState.jump;
+      } else if (!endDash && startDash) {
+        playerState = PlayerState.dash;
+      }
+    } else if (isOnGround) {
+      playerState = PlayerState.idle;
+      endDash = true;
+      startDash = false;
+      endJump = true;
+      startJump = false;
+    }
+
+    //if (!isDashed && !isOnGround) playerState = PlayerState.dash;
 
     current = playerState;
   }
 
   void _updatePlayerMovement(double dt) {
-    if (isJumped && isOnGround) {
-      _playerJump(dt);
+    if (isDashing && isOnGround) {
+      _playerDash(dt);
+    } else {
+      if (isJumping && isOnGround) {
+        _playerJump(dt);
+      }
+      if (endDash) {
+        velocity.x = horizontalMovement * moveSpeed;
+        position.x += velocity.x * dt;
+      } else {
+        velocity.x = isFacingRight * moveSpeed;
+        position.x += velocity.x * dt;
+      }
     }
-    velocity.x = horizontalMovement * moveSpeed;
-    position.x += velocity.x * dt;
+  }
+
+  void _playerDash(double dt) {
+    velocity.y = -_jumpforce * 0.5;
+    position.y += velocity.y * dt;
+    //isJumping = true;
+    isOnGround = false;
+    startDash = true;
+    endDash = false;
   }
 
   void _playerJump(double dt) {
     velocity.y = -_jumpforce;
     position.y += velocity.y * dt;
-    isJumped = false;
+    //isJumping = true;
     isOnGround = false;
+    startJump = true;
+    endJump = false;
   }
 
   void _checkHorizontalCollisions() {
