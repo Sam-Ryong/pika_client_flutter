@@ -6,7 +6,10 @@ import "package:pika_client_flutter/objects/player.dart";
 
 class PikaMap extends World {
   late TiledComponent map;
-  late PikaPlayer player;
+
+  final PikaPlayer player;
+
+  PikaMap({required this.player});
 
   @override
   FutureOr<void> onLoad() async {
@@ -20,9 +23,7 @@ class PikaMap extends World {
     for (final spawnPoint in spawnPointLayer!.objects) {
       switch (spawnPoint.class_) {
         case "PikaPlayer":
-          player = PikaPlayer(
-            position: Vector2(spawnPoint.x, spawnPoint.y),
-          );
+          player.position = Vector2(spawnPoint.x, spawnPoint.y);
           add(player);
           break;
         default:
