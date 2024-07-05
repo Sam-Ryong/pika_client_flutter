@@ -21,7 +21,7 @@ class PikaBall extends SpriteAnimationGroupComponent
   final double _gravity = 9.8;
   final double _jumpforce = 1000;
   final double _terminalVelocity = 1000;
-
+  late PikaPlayer player;
   bool isOnGround = true;
   bool isJumped = false;
   double moveSpeed = 100;
@@ -31,13 +31,14 @@ class PikaBall extends SpriteAnimationGroupComponent
   @override
   FutureOr<void> onLoad() async {
     _loadAllAnimations();
-    debugMode = true;
+    //debugMode = true;
     add(
       RectangleHitbox(
         position: Vector2(hitbox.offsetX, hitbox.offsetY),
         size: Vector2(hitbox.width, hitbox.height),
       ),
     );
+    player = game.host;
     return super.onLoad();
   }
 
@@ -47,16 +48,22 @@ class PikaBall extends SpriteAnimationGroupComponent
     _checkHorizontalCollisions();
     _applyGravity(dt);
     _checkVerticalCollisions();
+    position.x += velocity.x * dt;
     super.update(dt);
   }
 
-  @override
-  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    if (other is PikaPlayer) {
-      print(intersectionPoints);
-      velocity.y = -velocity.y;
+  void collidedWithPlayer(Set<Vector2> intersectionPoints) {
+    double centerpoint = (intersectionPoints.toList()[0][0] +
+            intersectionPoints.toList()[1][0]) /
+        2;
+    double ax = position.x + 20 - centerpoint;
+    if (!player.isSpiking) {
+      velocity.x = ax * 10;
+      velocity.y = -velocity.y / velocity.y * 400;
+    } else {
+      velocity.x = ax;
+      velocity.y = -velocity.y / velocity.y * 500;
     }
-    super.onCollision(intersectionPoints, other);
   }
 
   void _loadAllAnimations() {
@@ -88,14 +95,14 @@ class PikaBall extends SpriteAnimationGroupComponent
     // 미완성
     BallState ballState = BallState.normal;
 
-    //if (false) ballState = BallState.spike;
+    if (player.isSpiking) ballState = BallState.spike;
 
     current = ballState;
   }
 
   void _checkHorizontalCollisions() {
     for (final block in collisionBlocks) {
-      if (!block.isNet) {
+      if (!block.isAir) {
         if (checkCollision(this, block)) {
           if (velocity.x > 0) {
             velocity.x = -velocity.x;
@@ -104,20 +111,7 @@ class PikaBall extends SpriteAnimationGroupComponent
           }
           if (velocity.x < 0) {
             velocity.x = -velocity.x;
-            position.x = block.x + block.width + hitbox.width + hitbox.offsetX;
-            break;
-          }
-        }
-      } else if (block.isNet) {
-        if (checkCollision(this, block)) {
-          if (velocity.x > 0) {
-            velocity.x = -velocity.x;
-            position.x = block.x - hitbox.offsetX - hitbox.width;
-            break;
-          }
-          if (velocity.x < 0) {
-            velocity.x = -velocity.x;
-            position.x = block.x + block.width + hitbox.width + hitbox.offsetX;
+            position.x = block.x + block.width;
             break;
           }
         }
@@ -133,7 +127,7 @@ class PikaBall extends SpriteAnimationGroupComponent
 
   void _checkVerticalCollisions() {
     for (final block in collisionBlocks) {
-      if (!block.isNet) {
+      if (!block.isAir) {
         if (checkCollision(this, block)) {
           if (velocity.y > 0) {
             velocity.y = -velocity.y;
@@ -144,20 +138,6 @@ class PikaBall extends SpriteAnimationGroupComponent
           if (velocity.y < 0) {
             velocity.y = -velocity.y;
             position.y = block.y + block.height;
-            break;
-          }
-        }
-      } else if (block.isNet) {
-        if (checkCollision(this, block)) {
-          if (velocity.y > 0) {
-            velocity.y = -velocity.y;
-            position.y = block.y - hitbox.height - hitbox.offsetY;
-            isOnGround = true;
-            break;
-          }
-          if (velocity.y < 0) {
-            velocity.y = -velocity.y;
-            position.y = block.y + block.height - hitbox.offsetY;
             break;
           }
         }

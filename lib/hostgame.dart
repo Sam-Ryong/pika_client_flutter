@@ -3,19 +3,24 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:pika_client_flutter/components/ball.dart';
-import 'package:pika_client_flutter/controller/web_socket_controller.dart';
+import 'package:pika_client_flutter/components/spike_button.dart';
+//import 'package:pika_client_flutter/controller/web_socket_controller.dart';
 import 'package:pika_client_flutter/components/map.dart';
 import 'package:pika_client_flutter/components/player.dart';
 
 class VolleyballGame extends FlameGame
-    with HasKeyboardHandlerComponents, DragCallbacks {
-  late WebSocketController webSocketManager;
+    with
+        HasKeyboardHandlerComponents,
+        DragCallbacks,
+        TapCallbacks,
+        HasCollisionDetection {
+  //late WebSocketController webSocketManager;
   PikaPlayer host = PikaPlayer();
   PikaBall ball = PikaBall();
 
   late final CameraComponent cam;
   late JoystickComponent joystick;
-  bool showJoystick = false;
+  bool showControls = true;
   @override
   Color backgroundColor() => const Color(0xFFeeeeee);
 
@@ -33,24 +38,26 @@ class VolleyballGame extends FlameGame
     add(cam);
     add(world);
 
-    if (showJoystick) {
+    if (showControls) {
       addJoystick();
+      add(SpikeButton());
     }
 
-    webSocketManager = WebSocketController('ws://192.168.0.103:3000');
+    //webSocketManager = WebSocketController('ws://192.168.0.103:3000');
 
     return super.onLoad();
   }
 
   @override
   void update(double dt) {
-    if (showJoystick) {
+    if (showControls) {
       updateJoyStick();
     }
 
     super.update(dt);
   }
 
+/*
   void sendPositions() {
     final player1Pos = 'Player1: ${host.position}';
 
@@ -63,9 +70,10 @@ class VolleyballGame extends FlameGame
     webSocketManager.close();
     super.onRemove();
   }
-
+*/
   void addJoystick() {
     joystick = JoystickComponent(
+      priority: 10,
       knob: SpriteComponent(
         sprite: Sprite(
           images.fromCache("HUD/Knob.png"),
@@ -92,6 +100,7 @@ class VolleyballGame extends FlameGame
         break;
       case JoystickDirection.upLeft:
         host.isJumping = true;
+        host.isDashing = false;
         host.horizontalMovement = -1;
         break;
       case JoystickDirection.right:
@@ -102,10 +111,16 @@ class VolleyballGame extends FlameGame
         break;
       case JoystickDirection.upRight:
         host.isJumping = true;
+        host.isDashing = false;
         host.horizontalMovement = 1;
+        break;
+      case JoystickDirection.up:
+        host.isJumping = true;
+        host.isDashing = false;
         break;
       default:
         host.horizontalMovement = 0;
+        host.isJumping = false;
         //idle
         break;
     }

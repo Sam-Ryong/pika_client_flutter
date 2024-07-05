@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import "package:flutter/services.dart";
+import 'package:pika_client_flutter/components/ball.dart';
 import 'package:pika_client_flutter/components/collision_block.dart';
 import 'package:pika_client_flutter/components/player_hitbox.dart';
 import 'package:pika_client_flutter/components/utils.dart';
@@ -38,16 +39,18 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   bool startDash = false;
   bool isDashing = false;
   bool endDash = true;
+  bool isSpiking = false;
   double moveSpeed = 100;
   Vector2 velocity = Vector2(0, 0);
   List<CollisionBlock> collisionBlocks = [];
   PlayerHitbox hitbox =
-      PlayerHitbox(offsetX: 4, offsetY: 0, width: 56, height: 64);
-
+      PlayerHitbox(offsetX: 20, offsetY: 0, width: 44, height: 64);
+  double fixedDeltaTime = 1 / 60;
+  double accumulatedTime = 0;
   @override
   FutureOr<void> onLoad() async {
     _loadAllAnimations();
-    //debugMode = true;
+    debugMode = true;
     add(
       RectangleHitbox(
         position: Vector2(hitbox.offsetX, hitbox.offsetY),
@@ -60,11 +63,17 @@ class PikaPlayer extends SpriteAnimationGroupComponent
 
   @override
   void update(double dt) {
-    _updatePlayerState();
-    _updatePlayerMovement(dt);
-    _checkHorizontalCollisions();
-    _applyGravity(dt);
-    _checkVerticalCollisions();
+    accumulatedTime += dt;
+
+    while (accumulatedTime >= fixedDeltaTime) {
+      _updatePlayerState();
+      _updatePlayerMovement(fixedDeltaTime);
+      _checkHorizontalCollisions();
+      _applyGravity(fixedDeltaTime);
+      _checkVerticalCollisions();
+      accumulatedTime -= fixedDeltaTime;
+    }
+
     super.update(dt);
   }
 
@@ -92,6 +101,9 @@ class PikaPlayer extends SpriteAnimationGroupComponent
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (other is PikaBall) {
+      other.collidedWithPlayer(intersectionPoints);
+    }
     super.onCollision(intersectionPoints, other);
   }
 

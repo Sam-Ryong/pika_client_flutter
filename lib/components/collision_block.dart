@@ -2,12 +2,12 @@ import 'package:flame/components.dart';
 
 class CollisionBlock extends PositionComponent {
   bool isNet;
-  bool isPlayer;
+  bool isAir;
   CollisionBlock({
     position,
     size,
     this.isNet = false,
-    this.isPlayer = false,
+    this.isAir = false,
   }) : super(
           position: position,
           size: size,

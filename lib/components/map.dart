@@ -78,6 +78,15 @@ class PikaMap extends World {
             collisionBlocks.add(net);
             add(net);
             break;
+          case "Air":
+            final air = CollisionBlock(
+              position: Vector2(collision.x, collision.y),
+              size: Vector2(collision.width, collision.height),
+              isAir: true,
+            );
+            collisionBlocks.add(air);
+            add(air);
+            break;
           default:
             final block = CollisionBlock(
               position: Vector2(collision.x, collision.y),
@@ -104,7 +113,6 @@ class PikaMap extends World {
     }
 
     ball.collisionBlocks = collisionBlocks;
-
     player.collisionBlocks = collisionBlocks;
   }
 }

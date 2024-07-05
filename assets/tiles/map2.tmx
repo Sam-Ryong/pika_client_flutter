@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="54" height="38" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="37">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="54" height="38" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="38">
  <tileset firstgid="1" source="Bitmap106-8.tsx"/>
  <layer id="1" name="Background" width="54" height="38">
   <data encoding="csv">
@@ -43,7 +43,7 @@
 55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56,55,56
 </data>
  </layer>
- <layer id="8" name="Env" width="54" height="38">
+ <layer id="8" name="Env" width="54" height="38" opacity="0.99">
   <properties>
    <property name="Cloud" value=""/>
   </properties>
@@ -96,7 +96,8 @@
   <object id="20" x="432" y="-30.6667" width="46.7667" height="335.667"/>
   <object id="21" x="-22" y="266.5" width="488.667" height="49.5"/>
   <object id="22" x="-0.666667" y="-49.3333" width="432" height="48.7667"/>
-  <object id="23" name="Net" type="Net" x="207" y="-12.5" width="9" height="354.5"/>
+  <object id="23" name="Net" type="Net" x="207" y="200" width="9" height="142.5"/>
+  <object id="37" name="Air" type="Air" x="207" y="-4.18182" width="9" height="204.182"/>
  </objectgroup>
  <objectgroup id="7" name="Ball">
   <object id="33" name="Ball" type="Ball" x="32.5" y="63.5" width="40" height="40">
