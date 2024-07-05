@@ -69,6 +69,7 @@ flutter:
     - assets/images/ball.bmp
     - assets/tiles/
     - assets/images/player1/
+    - assets/images/
   #  - assets/images/enemy.png
   #  - assets/tiles/level.tmx
 
