@@ -1,17 +1,23 @@
 import "dart:async";
+import "dart:math";
 
 import "package:flame/components.dart";
 import "package:flame_tiled/flame_tiled.dart";
+import "package:pika_client_flutter/components/background_tile.dart";
+import "package:pika_client_flutter/components/ball.dart";
 import "package:pika_client_flutter/components/collision_block.dart";
 import "package:pika_client_flutter/components/player.dart";
 
 class PikaMap extends World {
+  var random = Random();
+
   late TiledComponent map;
   List<CollisionBlock> collisionBlocks = [];
 
   final PikaPlayer player;
+  final PikaBall ball;
 
-  PikaMap({required this.player});
+  PikaMap({required this.player, required this.ball});
 
   @override
   FutureOr<void> onLoad() async {
@@ -20,8 +26,34 @@ class PikaMap extends World {
       Vector2(8, 8),
     );
     add(map);
-    final spawnPointLayer = map.tileMap.getLayer<ObjectGroup>("Player1");
 
+    _spawningObjects();
+    _addCollision();
+    scrollingBackground();
+    return super.onLoad();
+  }
+
+  @override
+  void update(double dt) {
+    if (random.nextInt(100) < 1) {
+      scrollingBackground();
+    }
+
+    super.update(dt);
+  }
+
+  void scrollingBackground() {
+    double randomDouble = random.nextDouble() * 150;
+    final backgroundLayer = map.tileMap.getLayer("Background");
+    if (backgroundLayer != null) {
+      final backgroundTile =
+          BackgroundTile(Vector2(0, randomDouble), random.nextDouble());
+      add(backgroundTile);
+    }
+  }
+
+  void _spawningObjects() {
+    final spawnPointLayer = map.tileMap.getLayer<ObjectGroup>("Player1");
     if (spawnPointLayer != null) {
       for (final spawnPoint in spawnPointLayer.objects) {
         switch (spawnPoint.class_) {
@@ -33,7 +65,6 @@ class PikaMap extends World {
         }
       }
     }
-
     final collisionLayer = map.tileMap.getLayer<ObjectGroup>("Collisions");
 
     if (collisionLayer != null) {
@@ -59,7 +90,23 @@ class PikaMap extends World {
         }
       }
     }
+    final ballLayer = map.tileMap.getLayer<ObjectGroup>("Ball");
+
+    if (ballLayer != null) {
+      for (final ballPoint in ballLayer.objects) {
+        switch (ballPoint.class_) {
+          case "Ball":
+            ball.position = Vector2(ballPoint.x, ballPoint.y);
+            add(ball);
+            break;
+          default:
+        }
+      }
+    }
+
+    ball.collisionBlocks = collisionBlocks;
     player.collisionBlocks = collisionBlocks;
-    return super.onLoad();
   }
+
+  void _addCollision() {}
 }

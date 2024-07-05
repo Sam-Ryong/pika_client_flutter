@@ -1,62 +1,49 @@
 import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import "package:flutter/services.dart";
 import 'package:pika_client_flutter/components/collision_block.dart';
+import 'package:pika_client_flutter/components/player.dart';
 import 'package:pika_client_flutter/components/player_hitbox.dart';
 import 'package:pika_client_flutter/components/utils.dart';
 import 'package:pika_client_flutter/hostgame.dart';
 
-enum PlayerState {
-  idle,
-  jump,
+enum BallState {
+  normal,
   spike,
-  dash,
-  win,
-  lose,
 }
 
-class PikaPlayer extends SpriteAnimationGroupComponent
+class PikaBall extends SpriteAnimationGroupComponent
     with HasGameRef<VolleyballGame>, KeyboardHandler, CollisionCallbacks {
-  PikaPlayer({position}) : super(position: position);
-  late final SpriteAnimation idleAnimation;
-  late final SpriteAnimation jumpAnimation;
+  PikaBall({position}) : super(position: position);
+  late final SpriteAnimation normalAnimation;
   late final SpriteAnimation spikeAnimation;
-  late final SpriteAnimation dashAnimation;
-  late final SpriteAnimation winAnimation;
-  late final SpriteAnimation loseAnimation;
-  double horizontalMovement = 0;
 
   final double _gravity = 9.8;
-  final double _jumpforce = 300;
-  final double _terminalVelocity = 300;
+  final double _jumpforce = 1000;
+  final double _terminalVelocity = 1000;
 
   bool isOnGround = true;
   bool isJumped = false;
   double moveSpeed = 100;
   Vector2 velocity = Vector2(0, 0);
   List<CollisionBlock> collisionBlocks = [];
-  PlayerHitbox hitbox =
-      PlayerHitbox(offsetX: 4, offsetY: 0, width: 56, height: 64);
-
+  BallHitbox hitbox = BallHitbox(offsetX: 0, offsetY: 0, width: 40, height: 40);
   @override
   FutureOr<void> onLoad() async {
     _loadAllAnimations();
-    //debugMode = true;
+    debugMode = true;
     add(
       RectangleHitbox(
         position: Vector2(hitbox.offsetX, hitbox.offsetY),
         size: Vector2(hitbox.width, hitbox.height),
       ),
     );
-
     return super.onLoad();
   }
 
   @override
   void update(double dt) {
-    _updatePlayerState();
-    _updatePlayerMovement(dt);
+    _updateBallState();
     _checkHorizontalCollisions();
     _applyGravity(dt);
     _checkVerticalCollisions();
@@ -64,80 +51,46 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   }
 
   @override
-  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    horizontalMovement = 0;
-    final isLeftKeyPressed = keysPressed.contains(LogicalKeyboardKey.arrowLeft);
-    final isRightKeyPressed =
-        keysPressed.contains(LogicalKeyboardKey.arrowRight);
-    horizontalMovement += isLeftKeyPressed ? -1 : 0;
-    horizontalMovement += isRightKeyPressed ? 1 : 0;
-    isJumped = keysPressed.contains(LogicalKeyboardKey.arrowUp);
-    return super.onKeyEvent(event, keysPressed);
-  }
-
-  @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (other is PikaPlayer) {
+      print(intersectionPoints);
+      velocity.y = -velocity.y;
+    }
     super.onCollision(intersectionPoints, other);
   }
 
   void _loadAllAnimations() {
-    idleAnimation = _spriteAnimation("idle", 9, 0.2);
-    jumpAnimation = _spriteAnimation("jump", 8, 0.05);
-    spikeAnimation = _spriteAnimation("spike", 8, 0.05);
-    dashAnimation = _spriteAnimation("dash", 3, 0.05);
-    winAnimation = _spriteAnimation("win", 5, 0.05);
-    loseAnimation = _spriteAnimation("lose", 5, 0.05);
+    normalAnimation = _spriteAnimation("normal", 5, 0.1);
+    spikeAnimation = _spriteAnimation("spike", 3, 0.1);
 
     // 모든 애니메이션들
     animations = {
-      PlayerState.idle: idleAnimation,
-      PlayerState.jump: jumpAnimation,
-      PlayerState.spike: spikeAnimation,
-      PlayerState.dash: dashAnimation,
-      PlayerState.win: winAnimation,
-      PlayerState.lose: loseAnimation,
+      BallState.normal: normalAnimation,
+      BallState.spike: spikeAnimation,
     };
 
     // 현재 애니메이션
-    current = PlayerState.idle;
+    current = BallState.normal;
   }
 
   SpriteAnimation _spriteAnimation(String state, int amount, double stepTime) {
     return SpriteAnimation.fromFrameData(
-      game.images.fromCache("player1/$state.png"),
+      game.images.fromCache("ball/$state.png"),
       SpriteAnimationData.sequenced(
         amount: amount, //프레임 수
         stepTime: stepTime,
-        textureSize: Vector2.all(64),
+        textureSize: Vector2.all(40),
       ),
     );
   }
 
-  void _updatePlayerState() {
-    PlayerState playerState = PlayerState.idle;
-    if (velocity.x < 0 && scale.x > 0) {
-      flipHorizontallyAroundCenter();
-    } else if (velocity.x > 0 && scale.x < 0) {
-      flipHorizontallyAroundCenter();
-    }
-    if (!isOnGround) playerState = PlayerState.jump;
+  void _updateBallState() {
+    // 미완성
+    BallState ballState = BallState.normal;
 
-    current = playerState;
-  }
+    //if (false) ballState = BallState.spike;
 
-  void _updatePlayerMovement(double dt) {
-    if (isJumped && isOnGround) {
-      _playerJump(dt);
-    }
-    velocity.x = horizontalMovement * moveSpeed;
-    position.x += velocity.x * dt;
-  }
-
-  void _playerJump(double dt) {
-    velocity.y = -_jumpforce;
-    position.y += velocity.y * dt;
-    isJumped = false;
-    isOnGround = false;
+    current = ballState;
   }
 
   void _checkHorizontalCollisions() {
@@ -145,12 +98,12 @@ class PikaPlayer extends SpriteAnimationGroupComponent
       if (!block.isNet) {
         if (checkCollision(this, block)) {
           if (velocity.x > 0) {
-            velocity.x = 0;
+            velocity.x = -velocity.x;
             position.x = block.x - hitbox.offsetX - hitbox.width;
             break;
           }
           if (velocity.x < 0) {
-            velocity.x = 0;
+            velocity.x = -velocity.x;
             position.x = block.x + block.width + hitbox.width + hitbox.offsetX;
             break;
           }
@@ -158,12 +111,12 @@ class PikaPlayer extends SpriteAnimationGroupComponent
       } else if (block.isNet) {
         if (checkCollision(this, block)) {
           if (velocity.x > 0) {
-            velocity.x = 0;
+            velocity.x = -velocity.x;
             position.x = block.x - hitbox.offsetX - hitbox.width;
             break;
           }
           if (velocity.x < 0) {
-            velocity.x = 0;
+            velocity.x = -velocity.x;
             position.x = block.x + block.width + hitbox.width + hitbox.offsetX;
             break;
           }
@@ -183,13 +136,13 @@ class PikaPlayer extends SpriteAnimationGroupComponent
       if (!block.isNet) {
         if (checkCollision(this, block)) {
           if (velocity.y > 0) {
-            velocity.y = 0;
+            velocity.y = -velocity.y;
             position.y = block.y - hitbox.height - hitbox.offsetY;
             isOnGround = true;
             break;
           }
           if (velocity.y < 0) {
-            velocity.y = 0;
+            velocity.y = -velocity.y;
             position.y = block.y + block.height;
             break;
           }
@@ -197,13 +150,13 @@ class PikaPlayer extends SpriteAnimationGroupComponent
       } else if (block.isNet) {
         if (checkCollision(this, block)) {
           if (velocity.y > 0) {
-            velocity.y = 0;
+            velocity.y = -velocity.y;
             position.y = block.y - hitbox.height - hitbox.offsetY;
             isOnGround = true;
             break;
           }
           if (velocity.y < 0) {
-            velocity.y = 0;
+            velocity.y = -velocity.y;
             position.y = block.y + block.height - hitbox.offsetY;
             break;
           }

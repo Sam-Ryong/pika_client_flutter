@@ -2,6 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:pika_client_flutter/components/ball.dart';
 import 'package:pika_client_flutter/controller/web_socket_controller.dart';
 import 'package:pika_client_flutter/components/map.dart';
 import 'package:pika_client_flutter/components/player.dart';
@@ -10,6 +11,8 @@ class VolleyballGame extends FlameGame
     with HasKeyboardHandlerComponents, DragCallbacks {
   late WebSocketController webSocketManager;
   PikaPlayer host = PikaPlayer();
+  PikaBall ball = PikaBall();
+
   late final CameraComponent cam;
   late JoystickComponent joystick;
   bool showJoystick = false;
@@ -19,7 +22,7 @@ class VolleyballGame extends FlameGame
   @override
   Future<void> onLoad() async {
     await images.loadAllImages();
-    final world = PikaMap(player: host);
+    final world = PikaMap(player: host, ball: ball);
     cam = CameraComponent.withFixedResolution(
       world: world,
       width: 432,
