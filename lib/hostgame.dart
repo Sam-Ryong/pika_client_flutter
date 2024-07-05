@@ -13,9 +13,6 @@ class VolleyballGame extends FlameGame
   late final CameraComponent cam;
   late JoystickComponent joystick;
   bool showJoystick = false;
-
-  int gravity = 500;
-
   @override
   Color backgroundColor() => const Color(0xFFeeeeee);
 

@@ -9,15 +9,22 @@ import 'package:pika_client_flutter/hostgame.dart';
 
 enum PlayerState {
   idle,
-  jumping,
+  jump,
   spike,
+  dash,
+  win,
+  lose,
 }
 
 class PikaPlayer extends SpriteAnimationGroupComponent
     with HasGameRef<VolleyballGame>, KeyboardHandler {
   PikaPlayer({position}) : super(position: position);
   late final SpriteAnimation idleAnimation;
-  final double stepTime = 0.2;
+  late final SpriteAnimation jumpAnimation;
+  late final SpriteAnimation spikeAnimation;
+  late final SpriteAnimation dashAnimation;
+  late final SpriteAnimation winAnimation;
+  late final SpriteAnimation loseAnimation;
   double horizontalMovement = 0;
 
   final double _gravity = 9.8;
@@ -69,18 +76,28 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   }
 
   void _loadAllAnimations() {
-    idleAnimation = _spriteAnimation("idle", 8);
+    idleAnimation = _spriteAnimation("idle", 9, 0.2);
+    jumpAnimation = _spriteAnimation("jump", 8, 0.05);
+    spikeAnimation = _spriteAnimation("spike", 8, 0.05);
+    dashAnimation = _spriteAnimation("dash", 3, 0.05);
+    winAnimation = _spriteAnimation("win", 5, 0.05);
+    loseAnimation = _spriteAnimation("lose", 5, 0.05);
 
     // 모든 애니메이션들
     animations = {
       PlayerState.idle: idleAnimation,
+      PlayerState.jump: jumpAnimation,
+      PlayerState.spike: spikeAnimation,
+      PlayerState.dash: dashAnimation,
+      PlayerState.win: winAnimation,
+      PlayerState.lose: loseAnimation,
     };
 
     // 현재 애니메이션
     current = PlayerState.idle;
   }
 
-  SpriteAnimation _spriteAnimation(String state, int amount) {
+  SpriteAnimation _spriteAnimation(String state, int amount, double stepTime) {
     return SpriteAnimation.fromFrameData(
       game.images.fromCache("player1/$state.png"),
       SpriteAnimationData.sequenced(
@@ -98,6 +115,7 @@ class PikaPlayer extends SpriteAnimationGroupComponent
     } else if (velocity.x > 0 && scale.x < 0) {
       flipHorizontallyAroundCenter();
     }
+    if (!isOnGround) playerState = PlayerState.jump;
 
     current = playerState;
   }
