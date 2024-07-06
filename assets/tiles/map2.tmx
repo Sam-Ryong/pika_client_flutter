@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="54" height="38" tilewidth="8" tileheight="8" infinite="0" nextlayerid="10" nextobjectid="39">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="54" height="38" tilewidth="8" tileheight="8" infinite="0" nextlayerid="10" nextobjectid="41">
  <tileset firstgid="1" source="Bitmap106-8.tsx"/>
  <layer id="1" name="Background" width="54" height="38">
   <data encoding="csv">
@@ -89,20 +89,24 @@
 </data>
  </layer>
  <objectgroup id="2" name="Player1">
-  <object id="10" name="PikaPlayer" type="PikaPlayer" x="18.5" y="193.5" width="64.5" height="60.5"/>
-  <object id="38" name="OtherPlayer" type="OtherPlayer" x="334.75" y="192.75" width="64.5" height="60.5"/>
+  <object id="10" name="PikaPlayer" type="PikaPlayer" x="1" y="207" width="64" height="64"/>
+  <object id="38" name="OtherPlayer" type="OtherPlayer" x="359" y="207" width="64" height="64"/>
  </objectgroup>
  <objectgroup id="9" name="Player2"/>
  <objectgroup id="4" name="Collisions">
-  <object id="18" x="-36.6667" y="0.333333" width="36.1" height="303.5"/>
-  <object id="20" x="432" y="-30.6667" width="46.7667" height="335.667"/>
-  <object id="21" x="-22" y="266.5" width="488.667" height="49.5"/>
-  <object id="22" x="-0.666667" y="-49.3333" width="432" height="48.7667"/>
-  <object id="23" name="Net" type="Net" x="207" y="200" width="9" height="142.5"/>
-  <object id="37" name="Air" type="Air" x="207" y="-4.18182" width="9" height="204.182"/>
+  <object id="18" x="-80" y="0" width="80" height="304"/>
+  <object id="20" x="424" y="0" width="80" height="304"/>
+  <object id="21" name="HostGround" type="HostGround" x="0" y="272" width="208" height="80"/>
+  <object id="22" x="0" y="-80" width="432" height="80"/>
+  <object id="23" name="Net" type="Net" x="208" y="200" width="8" height="104"/>
+  <object id="37" name="Air" type="Air" x="208" y="0" width="8" height="200"/>
+  <object id="39" name="VisitorGround" type="VisitorGround" x="216" y="272" width="208" height="80"/>
  </objectgroup>
  <objectgroup id="7" name="Ball">
-  <object id="33" name="Ball" type="Ball" x="32.5" y="63.5" width="40" height="40">
+  <object id="33" name="Ball" type="Ball" x="24" y="1" width="40" height="40">
+   <ellipse/>
+  </object>
+  <object id="40" name="VBall" type="VBall" x="360" y="0" width="40" height="40">
    <ellipse/>
   </object>
  </objectgroup>

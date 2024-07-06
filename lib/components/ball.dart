@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+
 import 'package:pika_client_flutter/components/ball_clone.dart';
 import 'package:pika_client_flutter/components/collision_block.dart';
 import 'package:pika_client_flutter/components/dummy_player.dart';
 import 'package:pika_client_flutter/components/player.dart';
 import 'package:pika_client_flutter/components/player_hitbox.dart';
+import 'package:pika_client_flutter/components/score.dart';
 import 'package:pika_client_flutter/components/utils.dart';
 import 'package:pika_client_flutter/hostgame.dart';
 //import 'package:pika_client_flutter/visitorgame.dart';
@@ -39,7 +42,14 @@ class PikaBall extends SpriteAnimationGroupComponent
   late PikaBallClone spike = game.spike;
   late PikaBallClone shadow1 = game.shadow1;
   late PikaBallClone shadow2 = game.shadow2;
+  late Score hostScore = game.hostScore;
+  late Score visitorScore = game.visitorScore;
+  Vector2 hostSpawn = Vector2(0, 0);
+  Vector2 visitSpawn = Vector2(0, 0);
   int dtCount = 0;
+
+  bool where = true;
+  bool ready = true;
 
   @override
   FutureOr<void> onLoad() async {
@@ -122,7 +132,7 @@ class PikaBall extends SpriteAnimationGroupComponent
       shadow2.invisible();
       isSpiked = false;
       current = BallState.normal;
-      velocity.x = ax * 10;
+      velocity.x = ax * sqrt(ax * ax);
       velocity.y = -velocity.y / velocity.y * 400;
       game.webSocketManager.sendBallState("n");
     } else {
@@ -198,6 +208,16 @@ class PikaBall extends SpriteAnimationGroupComponent
   */
   void _checkHorizontalCollisions() {
     for (final block in collisionBlocks) {
+      if (block.isHost) {
+        if (checkCollision(this, block)) {
+          visitorScore.increase();
+        }
+      } else if (block.isVisit) {
+        if (checkCollision(this, block)) {
+          hostScore.increase();
+        }
+      }
+
       if (!block.isAir) {
         if (checkCollision(this, block)) {
           if (velocity.x > 0) {
@@ -223,6 +243,20 @@ class PikaBall extends SpriteAnimationGroupComponent
 
   void _checkVerticalCollisions() {
     for (final block in collisionBlocks) {
+      if (block.isHost) {
+        if (checkCollision(this, block)) {
+          visitorScore.increase();
+
+          where = false;
+        }
+      } else if (block.isVisit) {
+        if (checkCollision(this, block)) {
+          hostScore.increase();
+
+          where = true;
+        }
+      }
+
       if (!block.isAir) {
         if (checkCollision(this, block)) {
           if (velocity.y > 0) {

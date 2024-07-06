@@ -45,8 +45,13 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   bool right = false;
   bool up = false;
   bool down = false;
+  bool ready = true;
   double moveSpeed = 100;
+  bool isReset = false;
+  bool needToFlip = false;
   Vector2 velocity = Vector2(0, 0);
+  Vector2 spawn = Vector2(0, 0);
+  int countDt = 0;
   List<CollisionBlock> collisionBlocks = [];
   PlayerHitbox hitbox =
       PlayerHitbox(offsetX: 20, offsetY: 0, width: 44, height: 64);
@@ -76,6 +81,7 @@ class PikaPlayer extends SpriteAnimationGroupComponent
       _checkHorizontalCollisions();
       _applyGravity(fixedDeltaTime);
       _checkVerticalCollisions();
+
       game.webSocketManager.sendPlayerInfo(position, current);
       accumulatedTime -= fixedDeltaTime;
     }

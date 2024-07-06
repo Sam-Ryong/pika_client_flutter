@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:pika_client_flutter/components/ball.dart';
 import 'package:pika_client_flutter/components/ball_clone.dart';
 import 'package:pika_client_flutter/components/dummy_player.dart';
+import 'package:pika_client_flutter/components/overlay.dart';
+import 'package:pika_client_flutter/components/score.dart';
 import 'package:pika_client_flutter/components/spike_button.dart';
 import 'package:pika_client_flutter/controller/web_socket_controller.dart';
 import 'package:pika_client_flutter/components/map.dart';
@@ -23,7 +25,10 @@ class VolleyballGame extends FlameGame
   PikaBallClone spike = PikaBallClone("spike");
   PikaBallClone shadow1 = PikaBallClone("shadow1");
   PikaBallClone shadow2 = PikaBallClone("shadow2");
+  Score hostScore = Score();
+  Score visitorScore = Score();
   final String role;
+  DarkOverlayComponent darkOverlay = DarkOverlayComponent();
 
   late final CameraComponent cam;
   late JoystickComponent joystick;
@@ -31,7 +36,7 @@ class VolleyballGame extends FlameGame
 
   VolleyballGame(this.role);
   @override
-  Color backgroundColor() => const Color(0xFFeeeeee);
+  Color backgroundColor() => const Color.fromARGB(255, 0, 0, 0);
 
   @override
   Future<void> onLoad() async {
@@ -45,6 +50,8 @@ class VolleyballGame extends FlameGame
       shadow1: shadow1,
       shadow2: shadow2,
       role: role,
+      hostScore: hostScore,
+      visitorScore: visitorScore,
     );
     cam = CameraComponent.withFixedResolution(
       world: world,
@@ -68,7 +75,7 @@ class VolleyballGame extends FlameGame
   }
 
   @override
-  void update(double dt) {
+  void update(double dt) async {
     if (showControls) {
       updateJoyStick();
     }

@@ -7,6 +7,7 @@ import "package:pika_client_flutter/components/background_tile.dart";
 import "package:pika_client_flutter/components/ball.dart";
 import "package:pika_client_flutter/components/ball_clone.dart";
 import "package:pika_client_flutter/components/collision_block.dart";
+import "package:pika_client_flutter/components/score.dart";
 //import "package:pika_client_flutter/components/player.dart";
 
 class PikaMap extends World {
@@ -21,7 +22,12 @@ class PikaMap extends World {
   final PikaBallClone spike;
   final PikaBallClone shadow1;
   final PikaBallClone shadow2;
+
   final String role;
+  final Score hostScore;
+  final Score visitorScore;
+  late Vector2 player1Spawn;
+  late Vector2 player2Spawn;
 
   PikaMap({
     required this.player,
@@ -31,6 +37,8 @@ class PikaMap extends World {
     required this.shadow1,
     required this.shadow2,
     required this.role,
+    required this.hostScore,
+    required this.visitorScore,
   });
 
   @override
@@ -40,7 +48,8 @@ class PikaMap extends World {
       Vector2(8, 8),
     );
     add(map);
-
+    add(hostScore);
+    add(visitorScore);
     _spawningObjects();
     scrollingBackground();
     return super.onLoad();
@@ -74,11 +83,15 @@ class PikaMap extends World {
       for (final spawnPoint in spawnPointLayer.objects) {
         switch (spawnPoint.class_) {
           case "PikaPlayer":
-            player.position = Vector2(spawnPoint.x, spawnPoint.y);
+            player1Spawn = Vector2(spawnPoint.x, spawnPoint.y);
+            player.position = player1Spawn;
+            player.spawn = player1Spawn;
             add(player);
             break;
           case "OtherPlayer":
-            player2.position = Vector2(spawnPoint.x, spawnPoint.y);
+            player2Spawn = Vector2(spawnPoint.x, spawnPoint.y);
+            player2.position = player2Spawn;
+            player2.spawn = player2Spawn;
             add(player2);
             break;
           default:
@@ -109,6 +122,24 @@ class PikaMap extends World {
             collisionBlocks.add(air);
             add(air);
             break;
+          case "HostGround":
+            final hostGround = CollisionBlock(
+              position: Vector2(collision.x, collision.y),
+              size: Vector2(collision.width, collision.height),
+              isHost: true,
+            );
+            collisionBlocks.add(hostGround);
+            add(hostGround);
+            break;
+          case "VisitorGround":
+            final visitorGround = CollisionBlock(
+              position: Vector2(collision.x, collision.y),
+              size: Vector2(collision.width, collision.height),
+              isVisit: true,
+            );
+            collisionBlocks.add(visitorGround);
+            add(visitorGround);
+            break;
           default:
             final block = CollisionBlock(
               position: Vector2(collision.x, collision.y),
@@ -127,6 +158,16 @@ class PikaMap extends World {
         switch (ballPoint.class_) {
           case "Ball":
             ball.position = Vector2(ballPoint.x, ballPoint.y);
+            ball.hostSpawn = Vector2(ballPoint.x, ballPoint.y);
+            shadow1.position = Vector2(ballPoint.x, ballPoint.y);
+            shadow2.position = Vector2(ballPoint.x, ballPoint.y);
+            add(shadow2);
+            add(shadow1);
+            add(ball);
+            add(spike);
+            break;
+          case "VBall":
+            ball.visitSpawn = Vector2(ballPoint.x, ballPoint.y);
             shadow1.position = Vector2(ballPoint.x, ballPoint.y);
             shadow2.position = Vector2(ballPoint.x, ballPoint.y);
             add(shadow2);
