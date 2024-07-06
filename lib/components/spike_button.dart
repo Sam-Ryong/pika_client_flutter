@@ -18,9 +18,13 @@ class SpikeButton extends SpriteComponent
 
   @override
   void onTapDown(TapDownEvent event) {
-    game.host.isSpiking = true;
-    game.host.isDashing = true;
-    game.host.isJumping = false;
+    if (!game.host.isOnGround) {
+      game.host.isSpiking = true;
+    } else {
+      game.host.isDashing = true;
+      game.host.isJumping = false;
+    }
+
     super.onTapDown(event);
   }
 

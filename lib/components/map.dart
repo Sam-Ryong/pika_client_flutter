@@ -5,6 +5,7 @@ import "package:flame/components.dart";
 import "package:flame_tiled/flame_tiled.dart";
 import "package:pika_client_flutter/components/background_tile.dart";
 import "package:pika_client_flutter/components/ball.dart";
+import "package:pika_client_flutter/components/ball_clone.dart";
 import "package:pika_client_flutter/components/collision_block.dart";
 import "package:pika_client_flutter/components/player.dart";
 
@@ -16,8 +17,17 @@ class PikaMap extends World {
 
   final PikaPlayer player;
   final PikaBall ball;
+  final PikaBallClone spike;
+  final PikaBallClone shadow1;
+  final PikaBallClone shadow2;
 
-  PikaMap({required this.player, required this.ball});
+  PikaMap({
+    required this.player,
+    required this.ball,
+    required this.spike,
+    required this.shadow1,
+    required this.shadow2,
+  });
 
   @override
   FutureOr<void> onLoad() async {
@@ -105,7 +115,12 @@ class PikaMap extends World {
         switch (ballPoint.class_) {
           case "Ball":
             ball.position = Vector2(ballPoint.x, ballPoint.y);
+            shadow1.position = Vector2(ballPoint.x, ballPoint.y);
+            shadow2.position = Vector2(ballPoint.x, ballPoint.y);
+            add(shadow2);
+            add(shadow1);
             add(ball);
+            add(spike);
             break;
           default:
         }

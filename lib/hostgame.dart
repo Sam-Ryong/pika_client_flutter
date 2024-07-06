@@ -3,6 +3,7 @@ import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:pika_client_flutter/components/ball.dart';
+import 'package:pika_client_flutter/components/ball_clone.dart';
 import 'package:pika_client_flutter/components/spike_button.dart';
 //import 'package:pika_client_flutter/controller/web_socket_controller.dart';
 import 'package:pika_client_flutter/components/map.dart';
@@ -17,6 +18,9 @@ class VolleyballGame extends FlameGame
   //late WebSocketController webSocketManager;
   PikaPlayer host = PikaPlayer();
   PikaBall ball = PikaBall();
+  PikaBallClone spike = PikaBallClone("spike");
+  PikaBallClone shadow1 = PikaBallClone("shadow1");
+  PikaBallClone shadow2 = PikaBallClone("shadow2");
 
   late final CameraComponent cam;
   late JoystickComponent joystick;
@@ -27,7 +31,13 @@ class VolleyballGame extends FlameGame
   @override
   Future<void> onLoad() async {
     await images.loadAllImages();
-    final world = PikaMap(player: host, ball: ball);
+    final world = PikaMap(
+      player: host,
+      ball: ball,
+      spike: spike,
+      shadow1: shadow1,
+      shadow2: shadow2,
+    );
     cam = CameraComponent.withFixedResolution(
       world: world,
       width: 432,
@@ -94,33 +104,89 @@ class VolleyballGame extends FlameGame
     switch (joystick.direction) {
       case JoystickDirection.left:
         host.horizontalMovement = -1;
+        host.left = true;
+        host.right = false;
+        host.up = false;
+        host.down = false;
         break;
       case JoystickDirection.downLeft:
         host.horizontalMovement = -1;
+        host.left = true;
+        host.right = false;
+        host.up = false;
+        host.down = true;
         break;
       case JoystickDirection.upLeft:
         host.isJumping = true;
         host.isDashing = false;
         host.horizontalMovement = -1;
+        host.left = true;
+        host.right = false;
+        host.up = true;
+        host.down = false;
         break;
       case JoystickDirection.right:
         host.horizontalMovement = 1;
+        host.left = false;
+        host.right = true;
+        host.up = false;
+        host.down = false;
         break;
       case JoystickDirection.downRight:
         host.horizontalMovement = 1;
+        host.left = false;
+        host.right = true;
+        host.up = false;
+        host.down = true;
         break;
       case JoystickDirection.upRight:
         host.isJumping = true;
         host.isDashing = false;
         host.horizontalMovement = 1;
+        host.left = false;
+        host.right = true;
+        host.up = true;
+        host.down = false;
         break;
       case JoystickDirection.up:
         host.isJumping = true;
         host.isDashing = false;
+        host.left = false;
+        host.right = false;
+        host.up = true;
+        host.down = false;
+        break;
+      case JoystickDirection.down:
+        host.isJumping = true;
+        host.isDashing = false;
+        host.left = false;
+        host.right = false;
+        host.up = false;
+        host.down = true;
+        break;
+      case JoystickDirection.downLeft:
+        host.isJumping = true;
+        host.isDashing = false;
+        host.left = true;
+        host.right = false;
+        host.up = false;
+        host.down = true;
+        break;
+      case JoystickDirection.downRight:
+        host.isJumping = true;
+        host.isDashing = false;
+        host.left = false;
+        host.right = true;
+        host.up = false;
+        host.down = true;
         break;
       default:
         host.horizontalMovement = 0;
         host.isJumping = false;
+        host.left = false;
+        host.right = false;
+        host.up = false;
+        host.down = false;
         //idle
         break;
     }

@@ -40,6 +40,10 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   bool isDashing = false;
   bool endDash = true;
   bool isSpiking = false;
+  bool left = false;
+  bool right = false;
+  bool up = false;
+  bool down = false;
   double moveSpeed = 100;
   Vector2 velocity = Vector2(0, 0);
   List<CollisionBlock> collisionBlocks = [];
@@ -81,14 +85,18 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     horizontalMovement = 0;
     final isLeftKeyPressed = keysPressed.contains(LogicalKeyboardKey.arrowLeft);
+    left = isLeftKeyPressed;
     final isRightKeyPressed =
         keysPressed.contains(LogicalKeyboardKey.arrowRight);
+    right = isRightKeyPressed;
     horizontalMovement += isLeftKeyPressed ? -1 : 0;
     horizontalMovement += isRightKeyPressed ? 1 : 0;
-    if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
+    up = keysPressed.contains(LogicalKeyboardKey.arrowUp);
+    down = keysPressed.contains(LogicalKeyboardKey.arrowDown);
+    if (up) {
       isJumping = true;
       isDashing = false;
-    } else if (keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
+    } else if (keysPressed.contains(LogicalKeyboardKey.space)) {
       isJumping = false;
       isDashing = true;
     } else {
@@ -156,7 +164,11 @@ class PikaPlayer extends SpriteAnimationGroupComponent
       playerState = PlayerState.jump;
     } else if (!isOnGround) {
       if (endDash) {
-        playerState = PlayerState.jump;
+        if (isSpiking) {
+          playerState = PlayerState.spike;
+        } else {
+          playerState = PlayerState.jump;
+        }
       } else if (!endDash && startDash) {
         playerState = PlayerState.dash;
       }

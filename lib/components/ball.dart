@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:pika_client_flutter/components/ball_clone.dart';
 import 'package:pika_client_flutter/components/collision_block.dart';
 import 'package:pika_client_flutter/components/player.dart';
 import 'package:pika_client_flutter/components/player_hitbox.dart';
@@ -24,10 +25,18 @@ class PikaBall extends SpriteAnimationGroupComponent
   late PikaPlayer player;
   bool isOnGround = true;
   bool isJumped = false;
+  bool isSpiked = false;
   double moveSpeed = 100;
   Vector2 velocity = Vector2(0, 0);
   List<CollisionBlock> collisionBlocks = [];
   BallHitbox hitbox = BallHitbox(offsetX: 0, offsetY: 0, width: 40, height: 40);
+  final List<Vector2> previousPositions = [];
+  final int maxTrailLength = 2; // 잔상의 개수
+  late PikaBallClone spike = game.spike;
+  late PikaBallClone shadow1 = game.shadow1;
+  late PikaBallClone shadow2 = game.shadow2;
+  int dtCount = 0;
+
   @override
   FutureOr<void> onLoad() async {
     _loadAllAnimations();
@@ -38,37 +47,87 @@ class PikaBall extends SpriteAnimationGroupComponent
         size: Vector2(hitbox.width, hitbox.height),
       ),
     );
+    previousPositions.add(position);
+    previousPositions.add(position);
+
     player = game.host;
     return super.onLoad();
   }
 
   @override
   void update(double dt) {
-    _updateBallState();
+    //_updateBallState();
     _checkHorizontalCollisions();
     _applyGravity(dt);
     _checkVerticalCollisions();
+    if (dtCount == 5) {
+      previousPositions.add(position.clone());
+      if (previousPositions.length > maxTrailLength) {
+        previousPositions.removeAt(0);
+      }
+      dtCount = 0;
+    }
+
     position.x += velocity.x * dt;
+    shadow1.position = previousPositions[1];
+    shadow2.position = previousPositions[0];
+    spike.position = position;
+    dtCount++;
     super.update(dt);
   }
 
   void collidedWithPlayer(Set<Vector2> intersectionPoints) {
-    double centerpoint = (intersectionPoints.toList()[0][0] +
-            intersectionPoints.toList()[1][0]) /
-        2;
+    double centerpoint = intersectionPoints.length == 2
+        ? (intersectionPoints.toList()[0][0] +
+                intersectionPoints.toList()[1][0]) /
+            2
+        : position.x;
     double ax = position.x + 20 - centerpoint;
     if (!player.isSpiking) {
+      spike.invisible();
+      shadow1.invisible();
+      shadow2.invisible();
+      isSpiked = false;
+      current = BallState.normal;
       velocity.x = ax * 10;
       velocity.y = -velocity.y / velocity.y * 400;
     } else {
-      velocity.x = ax;
-      velocity.y = -velocity.y / velocity.y * 500;
+      isSpiked = true;
+      current = BallState.normal;
+      spike.visible();
+      shadow1.visible();
+      shadow2.visible();
+      if (player.up) {
+        if (player.left) {
+          velocity.x = -500;
+        } else if (player.right) {
+          velocity.x = 500;
+        } else {
+          velocity.x = ax;
+        }
+        velocity.y = -velocity.y / velocity.y * 500;
+      } else if (player.down) {
+        velocity.x = ax;
+        velocity.y = 500;
+      } else {
+        if (player.left) {
+          velocity.x = -500;
+          velocity.y = 0;
+        } else if (player.right) {
+          velocity.x = 500;
+          velocity.y = 0;
+        }
+      }
+      if (!player.left && !player.right && !player.up && !player.down) {
+        velocity.x = 300;
+        velocity.y = 0;
+      }
     }
   }
 
   void _loadAllAnimations() {
     normalAnimation = _spriteAnimation("normal", 5, 0.1);
-    spikeAnimation = _spriteAnimation("spike", 3, 0.1);
+    spikeAnimation = _spriteAnimation("spike", 1, 1);
 
     // 모든 애니메이션들
     animations = {
@@ -91,15 +150,14 @@ class PikaBall extends SpriteAnimationGroupComponent
     );
   }
 
+  /*
   void _updateBallState() {
     // 미완성
     BallState ballState = BallState.normal;
 
-    if (player.isSpiking) ballState = BallState.spike;
-
     current = ballState;
   }
-
+  */
   void _checkHorizontalCollisions() {
     for (final block in collisionBlocks) {
       if (!block.isAir) {
