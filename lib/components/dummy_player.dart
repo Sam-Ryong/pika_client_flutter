@@ -22,7 +22,7 @@ class PikaDummyPlayer extends SpriteAnimationGroupComponent
   late final SpriteAnimation dashAnimation;
   late final SpriteAnimation winAnimation;
   late final SpriteAnimation loseAnimation;
-  late int isFacingRight;
+  int isFacingRight = 1;
 
   double fixedDeltaTime = 1 / 60;
   double accumulatedTime = 0;

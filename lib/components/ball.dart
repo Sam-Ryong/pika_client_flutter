@@ -78,11 +78,14 @@ class PikaBall extends SpriteAnimationGroupComponent
     shadow2.position = previousPositions[0];
     spike.position = position;
     dtCount++;
+    if (game.role == "host") {
+      game.webSocketManager.sendBallInfo(position, velocity);
+    }
     super.update(dt);
   }
 
   void setRemoteInfo(String info) {
-    List<dynamic> list = jsonDecode(info);
+    List<dynamic> list = jsonDecode(info.substring(1));
     if (info[0] == "A") {
       position.x = list[0];
       position.y = list[1];
@@ -139,7 +142,9 @@ class PikaBall extends SpriteAnimationGroupComponent
         velocity.y = 0;
       }
     }
-    game.webSocketManager.sendBallInfo(position, velocity);
+    if (game.role == "visitor") {
+      game.webSocketManager.sendBallInfo(position, velocity);
+    }
   }
 
   void _loadAllAnimations() {

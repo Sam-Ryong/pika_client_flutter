@@ -24,9 +24,6 @@ class WebSocketController {
       onDone: () {},
     );
   }
-  String receiveMessage(String message) {
-    return message;
-  }
 
   void sendPlayerInfo(Vector2 position, dynamic current, int isFacingRight) {
     String pos = "0$position";
