@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flame/components.dart';
 import 'package:pika_client_flutter/hostgame.dart';
 //import 'package:pika_client_flutter/visitorgame.dart';
@@ -21,6 +22,7 @@ class PikaDummyPlayer extends SpriteAnimationGroupComponent
   late final SpriteAnimation dashAnimation;
   late final SpriteAnimation winAnimation;
   late final SpriteAnimation loseAnimation;
+  late int isFacingRight;
 
   double fixedDeltaTime = 1 / 60;
   double accumulatedTime = 0;
@@ -35,7 +37,6 @@ class PikaDummyPlayer extends SpriteAnimationGroupComponent
     accumulatedTime += dt;
 
     while (accumulatedTime >= fixedDeltaTime) {
-      _updatePlayerState();
       accumulatedTime -= fixedDeltaTime;
     }
 
@@ -62,7 +63,10 @@ class PikaDummyPlayer extends SpriteAnimationGroupComponent
 
     // 현재 애니메이션
     current = PlayerState.idle;
-    if (game.role == "host") flipHorizontallyAroundCenter();
+    if (game.role == "host") {
+      flipHorizontallyAroundCenter();
+      isFacingRight = -1;
+    }
   }
 
   SpriteAnimation _spriteAnimation(String state, int amount, double stepTime) {
@@ -76,9 +80,40 @@ class PikaDummyPlayer extends SpriteAnimationGroupComponent
     );
   }
 
-  void _updatePlayerState() {
-    PlayerState playerState = PlayerState.idle;
+  void setPlayerState(String state) {
+    switch (state) {
+      case "idle":
+        current = PlayerState.idle;
+        break;
+      case "jump":
+        current = PlayerState.jump;
+        break;
+      case "spike":
+        current = PlayerState.spike;
+        break;
+      case "dash":
+        current = PlayerState.dash;
+        break;
+      case "win":
+        current = PlayerState.win;
+        break;
+      case "lose":
+        current = PlayerState.lose;
+        break;
+      default:
+    }
+  }
 
-    current = playerState;
+  void setPlayerPosition(String position) {
+    List<dynamic> list = jsonDecode(position);
+    this.position.x = list[0];
+    this.position.y = list[1];
+  }
+
+  void setPlayerDirection(String direction) {
+    if (isFacingRight != int.parse(direction)) {
+      isFacingRight = int.parse(direction);
+      flipHorizontallyAroundCenter();
+    }
   }
 }

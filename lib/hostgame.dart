@@ -61,7 +61,8 @@ class VolleyballGame extends FlameGame
       add(SpikeButton());
     }
 
-    webSocketManager = WebSocketController('ws://192.168.0.103:3000');
+    webSocketManager =
+        WebSocketController('ws://192.168.0.103:3000', visitor, ball);
 
     return super.onLoad();
   }
@@ -73,12 +74,6 @@ class VolleyballGame extends FlameGame
     }
 
     super.update(dt);
-  }
-
-  void sendPositions() {
-    final player1Pos = 'Player1: ${host.position}';
-
-    webSocketManager.sendMessage(player1Pos);
   }
 
   @override

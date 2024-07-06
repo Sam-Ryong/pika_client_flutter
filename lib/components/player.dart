@@ -76,6 +76,7 @@ class PikaPlayer extends SpriteAnimationGroupComponent
       _checkHorizontalCollisions();
       _applyGravity(fixedDeltaTime);
       _checkVerticalCollisions();
+      game.webSocketManager.sendPlayerInfo(position, current, isFacingRight);
       accumulatedTime -= fixedDeltaTime;
     }
 
@@ -136,7 +137,10 @@ class PikaPlayer extends SpriteAnimationGroupComponent
 
     // 현재 애니메이션
     current = PlayerState.idle;
-    if (game.role == "visitor") flipHorizontallyAroundCenter();
+    if (game.role == "visitor") {
+      flipHorizontallyAroundCenter();
+      isFacingRight = -1;
+    }
   }
 
   SpriteAnimation _spriteAnimation(String state, int amount, double stepTime) {

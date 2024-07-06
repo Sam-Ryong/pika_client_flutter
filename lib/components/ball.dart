@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:pika_client_flutter/components/ball_clone.dart';
@@ -80,6 +81,17 @@ class PikaBall extends SpriteAnimationGroupComponent
     super.update(dt);
   }
 
+  void setRemoteInfo(String info) {
+    List<dynamic> list = jsonDecode(info);
+    if (info[0] == "A") {
+      position.x = list[0];
+      position.y = list[1];
+    } else if (info[0] == "B") {
+      velocity.x = list[0];
+      velocity.y = list[1];
+    }
+  }
+
   void collidedWithPlayer(Set<Vector2> intersectionPoints) {
     double centerpoint = intersectionPoints.length == 2
         ? (intersectionPoints.toList()[0][0] +
@@ -127,6 +139,7 @@ class PikaBall extends SpriteAnimationGroupComponent
         velocity.y = 0;
       }
     }
+    game.webSocketManager.sendBallInfo(position, velocity);
   }
 
   void _loadAllAnimations() {
