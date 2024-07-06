@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pika_client_flutter/components/ball.dart';
 import 'package:pika_client_flutter/components/ball_clone.dart';
 import 'package:pika_client_flutter/components/spike_button.dart';
-//import 'package:pika_client_flutter/controller/web_socket_controller.dart';
+import 'package:pika_client_flutter/controller/web_socket_controller.dart';
 import 'package:pika_client_flutter/components/map.dart';
 import 'package:pika_client_flutter/components/player.dart';
 
@@ -15,7 +15,7 @@ class VolleyballGame extends FlameGame
         DragCallbacks,
         TapCallbacks,
         HasCollisionDetection {
-  //late WebSocketController webSocketManager;
+  late WebSocketController webSocketManager;
   PikaPlayer host = PikaPlayer();
   PikaBall ball = PikaBall();
   PikaBallClone spike = PikaBallClone("spike");
@@ -53,7 +53,7 @@ class VolleyballGame extends FlameGame
       add(SpikeButton());
     }
 
-    //webSocketManager = WebSocketController('ws://192.168.0.103:3000');
+    webSocketManager = WebSocketController('ws://192.168.0.103:3000');
 
     return super.onLoad();
   }
@@ -67,7 +67,6 @@ class VolleyballGame extends FlameGame
     super.update(dt);
   }
 
-/*
   void sendPositions() {
     final player1Pos = 'Player1: ${host.position}';
 
@@ -80,7 +79,7 @@ class VolleyballGame extends FlameGame
     webSocketManager.close();
     super.onRemove();
   }
-*/
+
   void addJoystick() {
     joystick = JoystickComponent(
       priority: 10,
