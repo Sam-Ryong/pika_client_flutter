@@ -7,6 +7,7 @@ import 'package:pika_client_flutter/components/collision_block.dart';
 import 'package:pika_client_flutter/components/player_hitbox.dart';
 import 'package:pika_client_flutter/components/utils.dart';
 import 'package:pika_client_flutter/hostgame.dart';
+//import 'package:pika_client_flutter/visitorgame.dart';
 
 enum PlayerState {
   idle,
@@ -54,7 +55,7 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   @override
   FutureOr<void> onLoad() async {
     _loadAllAnimations();
-    debugMode = true;
+    //debugMode = true;
     add(
       RectangleHitbox(
         position: Vector2(hitbox.offsetX, hitbox.offsetY),
@@ -135,6 +136,7 @@ class PikaPlayer extends SpriteAnimationGroupComponent
 
     // 현재 애니메이션
     current = PlayerState.idle;
+    if (game.role == "visitor") flipHorizontallyAroundCenter();
   }
 
   SpriteAnimation _spriteAnimation(String state, int amount, double stepTime) {

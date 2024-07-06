@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import "package:flame/game.dart";
 import 'package:pika_client_flutter/hostgame.dart';
+//import 'package:pika_client_flutter/visitorgame.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +38,9 @@ class MyApp extends StatelessWidget {
 class VolleyballGameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final VolleyballGame game = VolleyballGame();
+    String visitor = "visitor";
+    String host = "host";
+    final VolleyballGame game = VolleyballGame(host);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       /*

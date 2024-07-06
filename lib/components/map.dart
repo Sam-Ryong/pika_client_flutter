@@ -7,7 +7,7 @@ import "package:pika_client_flutter/components/background_tile.dart";
 import "package:pika_client_flutter/components/ball.dart";
 import "package:pika_client_flutter/components/ball_clone.dart";
 import "package:pika_client_flutter/components/collision_block.dart";
-import "package:pika_client_flutter/components/player.dart";
+//import "package:pika_client_flutter/components/player.dart";
 
 class PikaMap extends World {
   var random = Random();
@@ -15,18 +15,22 @@ class PikaMap extends World {
   late TiledComponent map;
   List<CollisionBlock> collisionBlocks = [];
 
-  final PikaPlayer player;
+  final dynamic player;
+  final dynamic player2;
   final PikaBall ball;
   final PikaBallClone spike;
   final PikaBallClone shadow1;
   final PikaBallClone shadow2;
+  final String role;
 
   PikaMap({
     required this.player,
+    required this.player2,
     required this.ball,
     required this.spike,
     required this.shadow1,
     required this.shadow2,
+    required this.role,
   });
 
   @override
@@ -55,8 +59,11 @@ class PikaMap extends World {
     double randomDouble = random.nextDouble() * 150;
     final backgroundLayer = map.tileMap.getLayer("Background");
     if (backgroundLayer != null) {
-      final backgroundTile =
-          BackgroundTile(Vector2(0, randomDouble), random.nextDouble());
+      final backgroundTile = BackgroundTile(
+        Vector2(0, randomDouble),
+        random.nextDouble(),
+      );
+
       add(backgroundTile);
     }
   }
@@ -70,10 +77,15 @@ class PikaMap extends World {
             player.position = Vector2(spawnPoint.x, spawnPoint.y);
             add(player);
             break;
+          case "OtherPlayer":
+            player2.position = Vector2(spawnPoint.x, spawnPoint.y);
+            add(player2);
+            break;
           default:
         }
       }
     }
+
     final collisionLayer = map.tileMap.getLayer<ObjectGroup>("Collisions");
 
     if (collisionLayer != null) {
@@ -128,6 +140,10 @@ class PikaMap extends World {
     }
 
     ball.collisionBlocks = collisionBlocks;
-    player.collisionBlocks = collisionBlocks;
+    if (role == "host") {
+      player.collisionBlocks = collisionBlocks;
+    } else {
+      player2.collisionBlocks = collisionBlocks;
+    }
   }
 }

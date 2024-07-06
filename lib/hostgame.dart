@@ -4,6 +4,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:pika_client_flutter/components/ball.dart';
 import 'package:pika_client_flutter/components/ball_clone.dart';
+import 'package:pika_client_flutter/components/dummy_player.dart';
 import 'package:pika_client_flutter/components/spike_button.dart';
 import 'package:pika_client_flutter/controller/web_socket_controller.dart';
 import 'package:pika_client_flutter/components/map.dart';
@@ -17,26 +18,33 @@ class VolleyballGame extends FlameGame
         HasCollisionDetection {
   late WebSocketController webSocketManager;
   PikaPlayer host = PikaPlayer();
+  PikaDummyPlayer visitor = PikaDummyPlayer();
   PikaBall ball = PikaBall();
   PikaBallClone spike = PikaBallClone("spike");
   PikaBallClone shadow1 = PikaBallClone("shadow1");
   PikaBallClone shadow2 = PikaBallClone("shadow2");
+  final String role;
 
   late final CameraComponent cam;
   late JoystickComponent joystick;
   bool showControls = true;
+
+  VolleyballGame(this.role);
   @override
   Color backgroundColor() => const Color(0xFFeeeeee);
 
   @override
   Future<void> onLoad() async {
     await images.loadAllImages();
+
     final world = PikaMap(
-      player: host,
+      player: (role == "host") ? host : visitor,
+      player2: (role == "host") ? visitor : host,
       ball: ball,
       spike: spike,
       shadow1: shadow1,
       shadow2: shadow2,
+      role: role,
     );
     cam = CameraComponent.withFixedResolution(
       world: world,

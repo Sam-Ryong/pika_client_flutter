@@ -7,11 +7,14 @@ class WebSocketController {
     channel = WebSocketChannel.connect(Uri.parse(url));
     channel.stream.listen(
       (message) {
-        // 여기에서 메시지를 처리할 수 있습니다.
+        receiveMessage(message);
       },
       onError: (error) {},
       onDone: () {},
     );
+  }
+  String receiveMessage(String message) {
+    return message;
   }
 
   void sendMessage(String message) {

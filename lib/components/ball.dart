@@ -3,10 +3,12 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:pika_client_flutter/components/ball_clone.dart';
 import 'package:pika_client_flutter/components/collision_block.dart';
+import 'package:pika_client_flutter/components/dummy_player.dart';
 import 'package:pika_client_flutter/components/player.dart';
 import 'package:pika_client_flutter/components/player_hitbox.dart';
 import 'package:pika_client_flutter/components/utils.dart';
 import 'package:pika_client_flutter/hostgame.dart';
+//import 'package:pika_client_flutter/visitorgame.dart';
 
 enum BallState {
   normal,
@@ -23,6 +25,7 @@ class PikaBall extends SpriteAnimationGroupComponent
   final double _jumpforce = 1000;
   final double _terminalVelocity = 1000;
   late PikaPlayer player;
+  late PikaDummyPlayer visitor;
   bool isOnGround = true;
   bool isJumped = false;
   bool isSpiked = false;
@@ -51,6 +54,7 @@ class PikaBall extends SpriteAnimationGroupComponent
     previousPositions.add(position);
 
     player = game.host;
+    visitor = game.visitor;
     return super.onLoad();
   }
 

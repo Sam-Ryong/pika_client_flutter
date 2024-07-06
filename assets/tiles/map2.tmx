@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="54" height="38" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="38">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="54" height="38" tilewidth="8" tileheight="8" infinite="0" nextlayerid="10" nextobjectid="39">
  <tileset firstgid="1" source="Bitmap106-8.tsx"/>
  <layer id="1" name="Background" width="54" height="38">
   <data encoding="csv">
@@ -90,7 +90,9 @@
  </layer>
  <objectgroup id="2" name="Player1">
   <object id="10" name="PikaPlayer" type="PikaPlayer" x="18.5" y="193.5" width="64.5" height="60.5"/>
+  <object id="38" name="OtherPlayer" type="OtherPlayer" x="334.75" y="192.75" width="64.5" height="60.5"/>
  </objectgroup>
+ <objectgroup id="9" name="Player2"/>
  <objectgroup id="4" name="Collisions">
   <object id="18" x="-36.6667" y="0.333333" width="36.1" height="303.5"/>
   <object id="20" x="432" y="-30.6667" width="46.7667" height="335.667"/>

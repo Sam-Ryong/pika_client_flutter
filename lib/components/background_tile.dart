@@ -8,6 +8,7 @@ class BackgroundTile extends SpriteComponent with HasGameRef<VolleyballGame> {
   var random = Random();
   final double scrollSpeed;
   int count = 0;
+
   BackgroundTile(
     position,
     this.scrollSpeed,
