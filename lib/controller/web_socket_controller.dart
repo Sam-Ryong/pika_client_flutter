@@ -12,6 +12,8 @@ class WebSocketController {
       (message) {
         if (message[0] == "A" || message[0] == "B") {
           ball.setRemoteInfo(message);
+        } else if (message[0] == "S") {
+          ball.setRemoteState(message.substring(1));
         } else if (message[0] == "0") {
           visitor.setPlayerPosition(message.substring(1));
         } else if (message[0] == "2") {
@@ -25,13 +27,16 @@ class WebSocketController {
     );
   }
 
-  void sendPlayerInfo(Vector2 position, dynamic current, int isFacingRight) {
+  void sendPlayerInfo(Vector2 position, dynamic current) {
     String pos = "0$position";
     String cur = "1$current";
-    String dir = "2$isFacingRight";
 
     channel.sink.add(pos);
     channel.sink.add(cur);
+  }
+
+  void sendPlayerDirection(int isFacingRight) {
+    String dir = "2$isFacingRight";
     channel.sink.add(dir);
   }
 
@@ -40,6 +45,11 @@ class WebSocketController {
     String vel = "B$velocity";
     channel.sink.add(pos);
     channel.sink.add(vel);
+  }
+
+  void sendBallState(String state) {
+    String st = "S$state";
+    channel.sink.add(st);
   }
 
   void close() {

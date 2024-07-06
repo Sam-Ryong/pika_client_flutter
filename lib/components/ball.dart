@@ -27,7 +27,7 @@ class PikaBall extends SpriteAnimationGroupComponent
   final double _terminalVelocity = 1000;
   late PikaPlayer player;
   late PikaDummyPlayer visitor;
-  bool isOnGround = true;
+  bool isOnGround = false;
   bool isJumped = false;
   bool isSpiked = false;
   double moveSpeed = 100;
@@ -95,6 +95,20 @@ class PikaBall extends SpriteAnimationGroupComponent
     }
   }
 
+  void setRemoteState(String state) {
+    if (state == "s") {
+      isSpiked = true;
+      spike.visible();
+      shadow1.visible();
+      shadow2.visible();
+    } else if (state == "n") {
+      spike.invisible();
+      shadow1.invisible();
+      shadow2.invisible();
+      isSpiked = false;
+    }
+  }
+
   void collidedWithPlayer(Set<Vector2> intersectionPoints) {
     double centerpoint = intersectionPoints.length == 2
         ? (intersectionPoints.toList()[0][0] +
@@ -110,12 +124,14 @@ class PikaBall extends SpriteAnimationGroupComponent
       current = BallState.normal;
       velocity.x = ax * 10;
       velocity.y = -velocity.y / velocity.y * 400;
+      game.webSocketManager.sendBallState("n");
     } else {
       isSpiked = true;
       current = BallState.normal;
       spike.visible();
       shadow1.visible();
       shadow2.visible();
+      game.webSocketManager.sendBallState("s");
       if (player.up) {
         if (player.left) {
           velocity.x = -500;
