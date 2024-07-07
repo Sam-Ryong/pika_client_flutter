@@ -67,6 +67,7 @@ flutter:
     - lib/assets/images/ball.bmp
     - assets/images/player.bmp
     - assets/images/ball.bmp
+    - assets/Bitmap120.bmp
     - assets/tiles/
     - assets/images/player1/
     - assets/images/ball/
@@ -75,6 +76,11 @@ flutter:
     - assets/images/HUD/
     - assets/images/Number/
     - assets/images/Text/
+    - assets/fonts/
+  fonts:
+    - family: RetroFont
+      fonts:
+        - asset: assets/fonts/RetroFont.ttf
 
   #  - assets/images/enemy.png
   #  - assets/tiles/level.tmx
