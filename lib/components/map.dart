@@ -7,6 +7,8 @@ import "package:pika_client_flutter/components/background_tile.dart";
 import "package:pika_client_flutter/components/ball.dart";
 import "package:pika_client_flutter/components/ball_clone.dart";
 import "package:pika_client_flutter/components/collision_block.dart";
+import "package:pika_client_flutter/components/overlay.dart";
+import "package:pika_client_flutter/components/ready.dart";
 import "package:pika_client_flutter/components/score.dart";
 //import "package:pika_client_flutter/components/player.dart";
 
@@ -26,6 +28,8 @@ class PikaMap extends World {
   final String role;
   final Score hostScore;
   final Score visitorScore;
+  final Ready ready;
+  final DarkOverlayComponent darkOverlay;
   late Vector2 player1Spawn;
   late Vector2 player2Spawn;
 
@@ -39,6 +43,8 @@ class PikaMap extends World {
     required this.role,
     required this.hostScore,
     required this.visitorScore,
+    required this.ready,
+    required this.darkOverlay,
   });
 
   @override
@@ -48,9 +54,11 @@ class PikaMap extends World {
       Vector2(8, 8),
     );
     add(map);
-    add(hostScore);
-    add(visitorScore);
     _spawningObjects();
+    add(hostScore);
+    add(ready);
+    add(visitorScore);
+    add(darkOverlay);
     scrollingBackground();
     return super.onLoad();
   }
@@ -111,6 +119,8 @@ class PikaMap extends World {
               isNet: true,
             );
             collisionBlocks.add(net);
+            ready.position = Vector2(collision.x - 32, 16);
+            ready.initPos = Vector2(collision.x - 32, 16);
             add(net);
             break;
           case "Air":
@@ -161,6 +171,7 @@ class PikaMap extends World {
             ball.hostSpawn = Vector2(ballPoint.x, ballPoint.y);
             shadow1.position = Vector2(ballPoint.x, ballPoint.y);
             shadow2.position = Vector2(ballPoint.x, ballPoint.y);
+            hostScore.position = Vector2(ballPoint.x, ballPoint.y + 16);
             add(shadow2);
             add(shadow1);
             add(ball);
@@ -170,6 +181,7 @@ class PikaMap extends World {
             ball.visitSpawn = Vector2(ballPoint.x, ballPoint.y);
             shadow1.position = Vector2(ballPoint.x, ballPoint.y);
             shadow2.position = Vector2(ballPoint.x, ballPoint.y);
+            visitorScore.position = Vector2(ballPoint.x, ballPoint.y + 16);
             add(shadow2);
             add(shadow1);
             add(ball);

@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'package:flame/components.dart';
-import 'package:flame_tiled/flame_tiled.dart';
-
 import 'package:pika_client_flutter/hostgame.dart';
 
 enum NumState {
@@ -54,7 +52,10 @@ class Score extends SpriteGroupComponent<NumState>
       game.host.respawn();
       game.ball.respawn();
       game.slow = 0;
+      game.darkOverlay.reset();
+      game.ready1.makeLarge();
       Future.delayed(const Duration(milliseconds: 1500), () {
+        game.ready1.reset();
         game.host.respawn();
         game.ball.respawn();
         game.slow = 1;

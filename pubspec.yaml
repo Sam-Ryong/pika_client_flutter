@@ -74,6 +74,7 @@ flutter:
     - assets/images/
     - assets/images/HUD/
     - assets/images/Number/
+    - assets/images/Text/
 
   #  - assets/images/enemy.png
   #  - assets/tiles/level.tmx

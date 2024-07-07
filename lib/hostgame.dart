@@ -6,6 +6,7 @@ import 'package:pika_client_flutter/components/ball.dart';
 import 'package:pika_client_flutter/components/ball_clone.dart';
 import 'package:pika_client_flutter/components/dummy_player.dart';
 import 'package:pika_client_flutter/components/overlay.dart';
+import 'package:pika_client_flutter/components/ready.dart';
 import 'package:pika_client_flutter/components/score.dart';
 import 'package:pika_client_flutter/components/spike_button.dart';
 import 'package:pika_client_flutter/controller/web_socket_controller.dart';
@@ -27,6 +28,7 @@ class VolleyballGame extends FlameGame
   PikaBallClone shadow2 = PikaBallClone("shadow2");
   Score hostScore = Score();
   Score visitorScore = Score();
+  Ready ready1 = Ready();
   final String role;
   double slow = 1;
   DarkOverlayComponent darkOverlay = DarkOverlayComponent();
@@ -53,6 +55,8 @@ class VolleyballGame extends FlameGame
       role: role,
       hostScore: hostScore,
       visitorScore: visitorScore,
+      ready: ready1,
+      darkOverlay: darkOverlay,
     );
     cam = CameraComponent.withFixedResolution(
       world: world,
@@ -79,6 +83,10 @@ class VolleyballGame extends FlameGame
   void update(double dt) {
     if (showControls) {
       updateJoyStick();
+    }
+
+    if (slow == 0.3) {
+      darkOverlay.darken(0.02);
     }
 
     super.update(dt * slow);
