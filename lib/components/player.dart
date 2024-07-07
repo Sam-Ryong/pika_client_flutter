@@ -49,6 +49,8 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   double moveSpeed = 100;
   bool isReset = false;
   bool needToFlip = false;
+  bool win = false;
+  bool lose = false;
   Vector2 velocity = Vector2(0, 0);
   Vector2 spawn = Vector2(0, 0);
   int countDt = 0;
@@ -74,17 +76,26 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   @override
   void update(double dt) {
     accumulatedTime += dt;
+    if (!win && !lose) {
+      while (accumulatedTime >= fixedDeltaTime) {
+        _updatePlayerState();
+        _updatePlayerMovement(fixedDeltaTime);
+        _checkHorizontalCollisions();
+        _applyGravity(fixedDeltaTime);
+        _checkVerticalCollisions();
 
-    while (accumulatedTime >= fixedDeltaTime) {
-      _updatePlayerState();
-      _updatePlayerMovement(fixedDeltaTime);
-      _checkHorizontalCollisions();
-      _applyGravity(fixedDeltaTime);
-      _checkVerticalCollisions();
-
+        game.webSocketManager.sendPlayerInfo(position, current);
+        game.webSocketManager.sendPlayerDirection(isFacingRight);
+        accumulatedTime -= fixedDeltaTime;
+      }
+    } else {
+      if (win) {
+        current = PlayerState.win;
+      } else if (lose) {
+        current = PlayerState.lose;
+      }
       game.webSocketManager.sendPlayerInfo(position, current);
       game.webSocketManager.sendPlayerDirection(isFacingRight);
-      accumulatedTime -= fixedDeltaTime;
     }
 
     super.update(dt);
@@ -140,8 +151,8 @@ class PikaPlayer extends SpriteAnimationGroupComponent
     jumpAnimation = _spriteAnimation("jump", 8, 0.05);
     spikeAnimation = _spriteAnimation("spike", 8, 0.05);
     dashAnimation = _spriteAnimation("dash", 3, 0.2);
-    winAnimation = _spriteAnimation("win", 5, 0.05);
-    loseAnimation = _spriteAnimation("lose", 5, 0.05);
+    winAnimation = _spriteAnimation("win", 5, 0.3)..loop = false;
+    loseAnimation = _spriteAnimation("lose", 5, 0.3)..loop = false;
 
     // 모든 애니메이션들
     animations = {

@@ -31,7 +31,9 @@ class VolleyballGame extends FlameGame
   Ready ready1 = Ready();
   final String role;
   double slow = 0;
+  bool isEnd = false;
   bool isVisitorReady = false;
+
   DarkOverlayComponent darkOverlay = DarkOverlayComponent();
 
   late final CameraComponent cam;
@@ -98,7 +100,9 @@ class VolleyballGame extends FlameGame
     }
 
     if (slow == 0.3) {
-      darkOverlay.darken(0.02);
+      if (!isEnd) {
+        darkOverlay.darken(0.02);
+      }
     }
 
     super.update(dt * slow);

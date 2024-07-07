@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flame/components.dart';
-import 'package:flame/extensions.dart';
-import 'package:flame/game.dart';
+
 import 'package:pika_client_flutter/hostgame.dart';
 //import 'package:pika_client_flutter/visitorgame.dart';
 
@@ -32,6 +31,7 @@ class PikaDummyPlayer extends SpriteAnimationGroupComponent
   @override
   FutureOr<void> onLoad() async {
     _loadAllAnimations();
+
     return super.onLoad();
   }
 

@@ -26,8 +26,8 @@ class PikaBall extends SpriteAnimationGroupComponent
   late final SpriteAnimation spikeAnimation;
 
   final double _gravity = 9.8;
-  final double _jumpforce = 1000;
-  final double _terminalVelocity = 1000;
+  final double _jumpforce = 800;
+  final double _terminalVelocity = 800;
   late PikaPlayer player;
   late PikaDummyPlayer visitor;
   bool isOnGround = false;
@@ -73,9 +73,11 @@ class PikaBall extends SpriteAnimationGroupComponent
   @override
   void update(double dt) {
     //_updateBallState();
+
     _checkHorizontalCollisions();
     _applyGravity(dt);
     _checkVerticalCollisions();
+
     if (dtCount == 5) {
       previousPositions.add(position.clone());
       if (previousPositions.length > maxTrailLength) {
@@ -92,6 +94,7 @@ class PikaBall extends SpriteAnimationGroupComponent
     if (game.role == "host") {
       game.webSocketManager.sendBallInfo(position, velocity);
     }
+
     super.update(dt);
   }
 
@@ -155,22 +158,22 @@ class PikaBall extends SpriteAnimationGroupComponent
       game.webSocketManager.sendBallState("s");
       if (player.up) {
         if (player.left) {
-          velocity.x = -500;
+          velocity.x = -600;
         } else if (player.right) {
-          velocity.x = 500;
+          velocity.x = 600;
         } else {
           velocity.x = ax;
         }
-        velocity.y = -velocity.y / velocity.y * 500;
+        velocity.y = -velocity.y / velocity.y * 600;
       } else if (player.down) {
         velocity.x = ax;
-        velocity.y = 500;
+        velocity.y = 600;
       } else {
         if (player.left) {
-          velocity.x = -500;
+          velocity.x = -600;
           velocity.y = 0;
         } else if (player.right) {
-          velocity.x = 500;
+          velocity.x = 600;
           velocity.y = 0;
         }
       }
@@ -241,12 +244,12 @@ class PikaBall extends SpriteAnimationGroupComponent
         if (checkCollision(this, block)) {
           if (velocity.x > 0) {
             velocity.x = -velocity.x;
-            position.x = block.x - hitbox.offsetX - hitbox.width;
+            position.x = block.x - hitbox.offsetX - hitbox.width - 1;
             break;
           }
           if (velocity.x < 0) {
             velocity.x = -velocity.x;
-            position.x = block.x + block.width;
+            position.x = block.x + block.width + 1;
             break;
           }
         }
@@ -283,6 +286,7 @@ class PikaBall extends SpriteAnimationGroupComponent
       if (!block.isAir) {
         if (checkCollision(this, block)) {
           if (velocity.y > 0) {
+            //velocity.y = -velocity.y / velocity.y * 600;
             velocity.y = -velocity.y;
             position.y = block.y - hitbox.height - hitbox.offsetY;
             isOnGround = true;
@@ -291,7 +295,9 @@ class PikaBall extends SpriteAnimationGroupComponent
           }
           if (velocity.y < 0) {
             velocity.y = -velocity.y;
+            //velocity.y = velocity.y / velocity.y * 600;
             position.y = block.y + block.height;
+
             break;
           }
         }

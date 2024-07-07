@@ -51,19 +51,43 @@ class Score extends SpriteGroupComponent<NumState>
     }
     game.slow = 0.3;
 
-    Future.delayed(const Duration(seconds: 1), () {
-      game.host.respawn();
-      game.ball.respawn();
-      game.slow = 0;
-      game.darkOverlay.reset();
-      game.ready1.makeLarge();
-      Future.delayed(const Duration(milliseconds: 1500), () {
-        game.ready1.reset();
+    if (currentnum < max_score) {
+      Future.delayed(const Duration(seconds: 1), () {
         game.host.respawn();
         game.ball.respawn();
-        game.slow = 1;
+        game.slow = 0;
+        game.darkOverlay.reset();
+        game.ready1.makeLarge();
+        Future.delayed(const Duration(milliseconds: 1500), () {
+          game.ready1.reset();
+          game.host.respawn();
+          game.ball.respawn();
+          game.slow = 1;
+          game.ball.isScoring = false;
+        });
       });
-    });
+    } else {
+      if (game.ball.where) {
+        if (game.role == "host") {
+          game.host.win = true;
+        }
+
+        if (game.role == "visitor") {
+          game.host.lose = true;
+        }
+
+        game.isEnd = true;
+      } else {
+        if (game.role == "host") {
+          game.host.lose = true;
+        }
+
+        if (game.role == "visitor") {
+          game.host.win = true;
+        }
+        game.isEnd = true;
+      }
+    }
   }
 
   void reset() {
