@@ -32,6 +32,9 @@ class Score extends SpriteGroupComponent<NumState>
     temp = {};
     for (NumState state in NumState.values) {
       String spriteName = state.toString().split('.').last.substring(1);
+      if (spriteName == "0") {
+        spriteName = "1";
+      }
       temp[state] = Sprite(game.images.fromCache("Number/$spriteName.png"));
     }
     sprites = temp;

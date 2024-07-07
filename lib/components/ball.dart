@@ -219,16 +219,18 @@ class PikaBall extends SpriteAnimationGroupComponent
   */
   void _checkHorizontalCollisions() {
     for (final block in collisionBlocks) {
-      if (!isScoring) {
+      if (!isScoring && game.role == "host") {
         if (block.isHost) {
           if (checkCollision(this, block)) {
             visitorScore.increase();
+            game.webSocketManager.sendPoint("V");
             where = false;
             isScoring = true;
           }
         } else if (block.isVisit) {
           if (checkCollision(this, block)) {
             hostScore.increase();
+            game.webSocketManager.sendPoint("H");
             where = true;
             isScoring = true;
           }
@@ -260,16 +262,18 @@ class PikaBall extends SpriteAnimationGroupComponent
 
   void _checkVerticalCollisions() {
     for (final block in collisionBlocks) {
-      if (!isScoring) {
+      if (!isScoring && game.role == "host") {
         if (block.isHost) {
           if (checkCollision(this, block)) {
             visitorScore.increase();
+            game.webSocketManager.sendPoint("V");
             where = false;
             isScoring = true;
           }
         } else if (block.isVisit) {
           if (checkCollision(this, block)) {
             hostScore.increase();
+            game.webSocketManager.sendPoint("H");
             where = true;
             isScoring = true;
           }
@@ -282,6 +286,7 @@ class PikaBall extends SpriteAnimationGroupComponent
             velocity.y = -velocity.y;
             position.y = block.y - hitbox.height - hitbox.offsetY;
             isOnGround = true;
+
             break;
           }
           if (velocity.y < 0) {

@@ -30,7 +30,8 @@ class VolleyballGame extends FlameGame
   Score visitorScore = Score();
   Ready ready1 = Ready();
   final String role;
-  double slow = 1;
+  double slow = 0;
+  bool isVisitorReady = false;
   DarkOverlayComponent darkOverlay = DarkOverlayComponent();
 
   late final CameraComponent cam;
@@ -74,7 +75,18 @@ class VolleyballGame extends FlameGame
     }
 
     webSocketManager =
-        WebSocketController('ws://192.168.0.103:3000', visitor, ball);
+        WebSocketController('ws://192.168.0.103:3000', visitor, ball, this);
+    if (role == "visitor") {
+      webSocketManager.sendReady("ready");
+      ready1.makeLarge();
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        ready1.reset();
+        host.respawn();
+        ball.respawn();
+        slow = 1;
+      });
+      isVisitorReady = true;
+    }
 
     return super.onLoad();
   }

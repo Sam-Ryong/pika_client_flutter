@@ -1,12 +1,14 @@
 import 'package:flame/components.dart';
 import 'package:pika_client_flutter/components/ball.dart';
 import 'package:pika_client_flutter/components/dummy_player.dart';
+import 'package:pika_client_flutter/hostgame.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketController {
   late WebSocketChannel channel;
 
-  WebSocketController(String url, PikaDummyPlayer visitor, PikaBall ball) {
+  WebSocketController(
+      String url, PikaDummyPlayer visitor, PikaBall ball, VolleyballGame game) {
     channel = WebSocketChannel.connect(Uri.parse(url));
     channel.stream.listen(
       (message) {
@@ -20,6 +22,19 @@ class WebSocketController {
           visitor.setPlayerDirection(message.substring(1));
         } else if (message[0] == "1") {
           visitor.setPlayerState(message.substring(13));
+        } else if (message == "ready") {
+          game.isVisitorReady = true;
+          game.ready1.makeLarge();
+          Future.delayed(const Duration(milliseconds: 1500), () {
+            game.ready1.reset();
+            game.host.respawn();
+            game.ball.respawn();
+            game.slow = 1;
+          });
+        } else if (message == "H") {
+          game.hostScore.increase();
+        } else if (message == "V") {
+          game.visitorScore.increase();
         }
       },
       onError: (error) {},
@@ -50,6 +65,14 @@ class WebSocketController {
   void sendBallState(String state) {
     String st = "S$state";
     channel.sink.add(st);
+  }
+
+  void sendReady(String ready) {
+    channel.sink.add(ready);
+  }
+
+  void sendPoint(String role) {
+    channel.sink.add(role);
   }
 
   void close() {

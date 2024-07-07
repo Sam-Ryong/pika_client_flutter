@@ -83,6 +83,7 @@ class PikaPlayer extends SpriteAnimationGroupComponent
       _checkVerticalCollisions();
 
       game.webSocketManager.sendPlayerInfo(position, current);
+      game.webSocketManager.sendPlayerDirection(isFacingRight);
       accumulatedTime -= fixedDeltaTime;
     }
 
@@ -91,7 +92,13 @@ class PikaPlayer extends SpriteAnimationGroupComponent
 
   void respawn() {
     scale.x = game.role == "host" ? 1 : -1;
+    isFacingRight = game.role == "host" ? 1 : -1;
     position = spawn;
+    if (game.role == "visitor") {
+      position.x = position.x + 64;
+    }
+    game.webSocketManager.sendPlayerInfo(position, current);
+    game.webSocketManager.sendPlayerDirection(isFacingRight);
   }
 
   @override
@@ -171,11 +178,9 @@ class PikaPlayer extends SpriteAnimationGroupComponent
     if (velocity.x < 0 && scale.x > 0) {
       isFacingRight = -1;
       flipHorizontallyAroundCenter();
-      game.webSocketManager.sendPlayerDirection(isFacingRight);
     } else if (velocity.x > 0 && scale.x < 0) {
       isFacingRight = 1;
       flipHorizontallyAroundCenter();
-      game.webSocketManager.sendPlayerDirection(isFacingRight);
     }
     if (endJump && isDashing) {
       playerState = PlayerState.dash;

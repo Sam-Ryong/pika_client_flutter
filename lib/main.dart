@@ -40,7 +40,7 @@ class VolleyballGameWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     String visitor = "visitor";
     String host = "host";
-    final VolleyballGame game = VolleyballGame(host);
+    final VolleyballGame game = VolleyballGame(visitor);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       /*
