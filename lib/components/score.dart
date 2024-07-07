@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flame/components.dart';
+import 'package:flame_tiled/flame_tiled.dart';
 
 import 'package:pika_client_flutter/hostgame.dart';
 
@@ -47,6 +48,18 @@ class Score extends SpriteGroupComponent<NumState>
       current = NumState.values
           .firstWhere((e) => e.toString().split('.').last == "n$currentnum");
     }
+    game.slow = 0.3;
+
+    Future.delayed(const Duration(seconds: 1), () {
+      game.host.respawn();
+      game.ball.respawn();
+      game.slow = 0;
+      Future.delayed(const Duration(milliseconds: 1500), () {
+        game.host.respawn();
+        game.ball.respawn();
+        game.slow = 1;
+      });
+    });
   }
 
   void reset() {

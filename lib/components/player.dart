@@ -89,6 +89,11 @@ class PikaPlayer extends SpriteAnimationGroupComponent
     super.update(dt);
   }
 
+  void respawn() {
+    scale.x = game.role == "host" ? 1 : -1;
+    position = spawn;
+  }
+
   @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     horizontalMovement = 0;

@@ -28,6 +28,7 @@ class VolleyballGame extends FlameGame
   Score hostScore = Score();
   Score visitorScore = Score();
   final String role;
+  double slow = 1;
   DarkOverlayComponent darkOverlay = DarkOverlayComponent();
 
   late final CameraComponent cam;
@@ -75,12 +76,12 @@ class VolleyballGame extends FlameGame
   }
 
   @override
-  void update(double dt) async {
+  void update(double dt) {
     if (showControls) {
       updateJoyStick();
     }
 
-    super.update(dt);
+    super.update(dt * slow);
   }
 
   @override

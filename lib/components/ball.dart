@@ -47,6 +47,7 @@ class PikaBall extends SpriteAnimationGroupComponent
   Vector2 hostSpawn = Vector2(0, 0);
   Vector2 visitSpawn = Vector2(0, 0);
   int dtCount = 0;
+  bool isScoring = false;
 
   bool where = true;
   bool ready = true;
@@ -92,6 +93,16 @@ class PikaBall extends SpriteAnimationGroupComponent
       game.webSocketManager.sendBallInfo(position, velocity);
     }
     super.update(dt);
+  }
+
+  void respawn() {
+    if (where) {
+      position = hostSpawn;
+    } else {
+      position = visitSpawn;
+    }
+    isScoring = false;
+    velocity = Vector2(0, 0);
   }
 
   void setRemoteInfo(String info) {
@@ -208,13 +219,19 @@ class PikaBall extends SpriteAnimationGroupComponent
   */
   void _checkHorizontalCollisions() {
     for (final block in collisionBlocks) {
-      if (block.isHost) {
-        if (checkCollision(this, block)) {
-          visitorScore.increase();
-        }
-      } else if (block.isVisit) {
-        if (checkCollision(this, block)) {
-          hostScore.increase();
+      if (!isScoring) {
+        if (block.isHost) {
+          if (checkCollision(this, block)) {
+            visitorScore.increase();
+            where = false;
+            isScoring = true;
+          }
+        } else if (block.isVisit) {
+          if (checkCollision(this, block)) {
+            hostScore.increase();
+            where = true;
+            isScoring = true;
+          }
         }
       }
 
@@ -243,17 +260,19 @@ class PikaBall extends SpriteAnimationGroupComponent
 
   void _checkVerticalCollisions() {
     for (final block in collisionBlocks) {
-      if (block.isHost) {
-        if (checkCollision(this, block)) {
-          visitorScore.increase();
-
-          where = false;
-        }
-      } else if (block.isVisit) {
-        if (checkCollision(this, block)) {
-          hostScore.increase();
-
-          where = true;
+      if (!isScoring) {
+        if (block.isHost) {
+          if (checkCollision(this, block)) {
+            visitorScore.increase();
+            where = false;
+            isScoring = true;
+          }
+        } else if (block.isVisit) {
+          if (checkCollision(this, block)) {
+            hostScore.increase();
+            where = true;
+            isScoring = true;
+          }
         }
       }
 
