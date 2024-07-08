@@ -1,29 +1,9 @@
 {
-  "project_info": {
-    "project_number": "635400317052",
-    "project_id": "pika-22461",
-    "storage_bucket": "pika-22461.appspot.com"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:635400317052:android:e544352ffabc52dbbc41f9",
-        "android_client_info": {
-          "package_name": "com.example.pika_client_flutter"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA7BIECv4tPTkxRykC4mjFUolVuYfOAV1s"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    }
-  ],
-  "configuration_version": "1"
+  "installed": {
+    "client_id": "585939641747-n13tcqghmj1ec32ubgpcofu9d01iblae.apps.googleusercontent.com",
+    "project_id": "playground-423713",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
+  }
 }
