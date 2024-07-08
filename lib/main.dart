@@ -486,11 +486,14 @@ class GameRoomDetail extends StatelessWidget {
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
-            MaterialPageRoute(
-              builder: (context) => VolleyballGameWidget(
-                role: 'visitor',
-                myId: userinfo["id"],
-                hostId: room.id,
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => VolleyballGameWidget(
+                  role: 'visitor',
+                  myId: userinfo["id"],
+                  hostId: room.id,
+                ),
               ),
             );
           },
