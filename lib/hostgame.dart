@@ -33,6 +33,8 @@ class VolleyballGame extends FlameGame
   double slow = 0;
   bool isEnd = false;
   bool isVisitorReady = false;
+  final String myId;
+  final String hostId;
 
   DarkOverlayComponent darkOverlay = DarkOverlayComponent();
 
@@ -40,7 +42,7 @@ class VolleyballGame extends FlameGame
   late JoystickComponent joystick;
   bool showControls = true;
 
-  VolleyballGame(this.role);
+  VolleyballGame(this.role, this.myId, this.hostId);
   @override
   Color backgroundColor() => const Color.fromARGB(255, 0, 0, 0);
 
@@ -76,19 +78,23 @@ class VolleyballGame extends FlameGame
       add(SpikeButton());
     }
 
-    webSocketManager =
-        WebSocketController('ws://192.168.0.103:3000', visitor, ball, this);
-    if (role == "visitor") {
-      webSocketManager.sendReady("ready");
-      ready1.makeLarge();
-      Future.delayed(const Duration(milliseconds: 1500), () {
-        ready1.reset();
-        host.respawn();
-        ball.respawn();
-        slow = 1;
-      });
-      isVisitorReady = true;
+    webSocketManager = WebSocketController('ws://192.168.0.103:3000', this);
+    if (role == "host") {
+      webSocketManager.makeRoom(hostId);
     }
+    if (role == "visitor") {
+      webSocketManager.enterRoom(hostId, myId);
+    }
+    // if (role == "visitor") {
+    //   ready1.makeLarge();
+    //   Future.delayed(const Duration(milliseconds: 1500), () {
+    //     ready1.reset();
+    //     host.respawn();
+    //     ball.respawn();
+    //     slow = 1;
+    //   });
+    //   isVisitorReady = true;
+    // }
 
     return super.onLoad();
   }
@@ -114,6 +120,8 @@ class VolleyballGame extends FlameGame
     webSocketManager.close();
     super.onRemove();
   }
+
+  void permiting() {}
 
   void addJoystick() {
     joystick = JoystickComponent(

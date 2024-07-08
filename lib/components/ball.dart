@@ -48,6 +48,8 @@ class PikaBall extends SpriteAnimationGroupComponent
   Vector2 visitSpawn = Vector2(0, 0);
   int dtCount = 0;
   bool isScoring = false;
+  late String hostId = game.hostId;
+  late String myId = game.myId;
 
   bool where = true;
   bool ready = true;
@@ -92,7 +94,7 @@ class PikaBall extends SpriteAnimationGroupComponent
     spike.position = position;
     dtCount++;
     if (game.role == "host") {
-      game.webSocketManager.sendBallInfo(position, velocity);
+      game.webSocketManager.sendBallInfo(hostId, myId, position, velocity);
     }
 
     super.update(dt);
@@ -108,15 +110,13 @@ class PikaBall extends SpriteAnimationGroupComponent
     velocity = Vector2(0, 0);
   }
 
-  void setRemoteInfo(String info) {
-    List<dynamic> list = jsonDecode(info.substring(1));
-    if (info[0] == "A") {
-      position.x = list[0];
-      position.y = list[1];
-    } else if (info[0] == "B") {
-      velocity.x = list[0];
-      velocity.y = list[1];
-    }
+  void setRemoteInfo(String pos, String vel) {
+    List<dynamic> p = jsonDecode(pos);
+    List<dynamic> v = jsonDecode(vel);
+    position.x = p[0];
+    position.y = p[1];
+    velocity.x = v[0];
+    velocity.y = v[1];
   }
 
   void setRemoteState(String state) {
@@ -148,14 +148,14 @@ class PikaBall extends SpriteAnimationGroupComponent
       current = BallState.normal;
       velocity.x = ax * sqrt(ax * ax);
       velocity.y = -velocity.y / velocity.y * 400;
-      game.webSocketManager.sendBallState("n");
+      game.webSocketManager.sendBallState(hostId, myId, "n");
     } else {
       isSpiked = true;
       current = BallState.normal;
       spike.visible();
       shadow1.visible();
       shadow2.visible();
-      game.webSocketManager.sendBallState("s");
+      game.webSocketManager.sendBallState(hostId, myId, "s");
       if (player.up) {
         if (player.left) {
           velocity.x = -600;
@@ -183,7 +183,7 @@ class PikaBall extends SpriteAnimationGroupComponent
       }
     }
     if (game.role == "visitor") {
-      game.webSocketManager.sendBallInfo(position, velocity);
+      game.webSocketManager.sendBallInfo(hostId, myId, position, velocity);
     }
   }
 
@@ -226,14 +226,14 @@ class PikaBall extends SpriteAnimationGroupComponent
         if (block.isHost) {
           if (checkCollision(this, block)) {
             visitorScore.increase();
-            game.webSocketManager.sendPoint("V");
+            game.webSocketManager.sendPoint(hostId, myId, "visitor");
             where = false;
             isScoring = true;
           }
         } else if (block.isVisit) {
           if (checkCollision(this, block)) {
             hostScore.increase();
-            game.webSocketManager.sendPoint("H");
+            game.webSocketManager.sendPoint(hostId, myId, "host");
             where = true;
             isScoring = true;
           }
@@ -269,14 +269,14 @@ class PikaBall extends SpriteAnimationGroupComponent
         if (block.isHost) {
           if (checkCollision(this, block)) {
             visitorScore.increase();
-            game.webSocketManager.sendPoint("V");
+            game.webSocketManager.sendPoint(hostId, myId, "visitor");
             where = false;
             isScoring = true;
           }
         } else if (block.isVisit) {
           if (checkCollision(this, block)) {
             hostScore.increase();
-            game.webSocketManager.sendPoint("H");
+            game.webSocketManager.sendPoint(hostId, myId, "host");
             where = true;
             isScoring = true;
           }

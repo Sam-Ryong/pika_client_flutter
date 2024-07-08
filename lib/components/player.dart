@@ -28,7 +28,8 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   late final SpriteAnimation winAnimation;
   late final SpriteAnimation loseAnimation;
   double horizontalMovement = 0;
-
+  late String hostId = game.hostId;
+  late String myId = game.myId;
   final double _gravity = 9.8;
   final double _jumpforce = 300;
   final double _terminalVelocity = 300;
@@ -84,8 +85,8 @@ class PikaPlayer extends SpriteAnimationGroupComponent
         _applyGravity(fixedDeltaTime);
         _checkVerticalCollisions();
 
-        game.webSocketManager.sendPlayerInfo(position, current);
-        game.webSocketManager.sendPlayerDirection(isFacingRight);
+        game.webSocketManager.sendPlayerInfo(hostId, myId, position, current);
+        game.webSocketManager.sendPlayerDirection(hostId, myId, isFacingRight);
         accumulatedTime -= fixedDeltaTime;
       }
     } else {
@@ -94,8 +95,8 @@ class PikaPlayer extends SpriteAnimationGroupComponent
       } else if (lose) {
         current = PlayerState.lose;
       }
-      game.webSocketManager.sendPlayerInfo(position, current);
-      game.webSocketManager.sendPlayerDirection(isFacingRight);
+      game.webSocketManager.sendPlayerInfo(hostId, myId, position, current);
+      game.webSocketManager.sendPlayerDirection(hostId, myId, isFacingRight);
     }
 
     super.update(dt);
@@ -108,8 +109,8 @@ class PikaPlayer extends SpriteAnimationGroupComponent
     if (game.role == "visitor") {
       position.x = position.x + 64;
     }
-    game.webSocketManager.sendPlayerInfo(position, current);
-    game.webSocketManager.sendPlayerDirection(isFacingRight);
+    game.webSocketManager.sendPlayerInfo(hostId, myId, position, current);
+    game.webSocketManager.sendPlayerDirection(hostId, myId, isFacingRight);
   }
 
   @override

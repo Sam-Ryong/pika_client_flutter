@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pika_client_flutter/game/game.dart';
 
 class GamePage extends StatefulWidget {
-  const GamePage({Key? key}) : super(key: key);
+  const GamePage({super.key});
 
   @override
   State<GamePage> createState() => _GamePageState();
