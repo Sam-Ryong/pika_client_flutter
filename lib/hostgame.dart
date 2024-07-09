@@ -12,6 +12,7 @@ import 'package:pika_client_flutter/components/spike_button.dart';
 import 'package:pika_client_flutter/controller/web_socket_controller.dart';
 import 'package:pika_client_flutter/components/map.dart';
 import 'package:pika_client_flutter/components/player.dart';
+import 'package:pika_client_flutter/gamemain.dart';
 
 class VolleyballGame extends FlameGame
     with
@@ -35,6 +36,8 @@ class VolleyballGame extends FlameGame
   bool isVisitorReady = false;
   final String myId;
   final String hostId;
+  String enemyId = "";
+  final VolleyballGameWidgetState dialog;
 
   DarkOverlayComponent darkOverlay = DarkOverlayComponent();
 
@@ -42,7 +45,7 @@ class VolleyballGame extends FlameGame
   late JoystickComponent joystick;
   bool showControls = true;
 
-  VolleyballGame(this.role, this.myId, this.hostId);
+  VolleyballGame(this.role, this.myId, this.hostId, this.dialog);
   @override
   Color backgroundColor() => const Color.fromARGB(255, 0, 0, 0);
 
@@ -80,10 +83,11 @@ class VolleyballGame extends FlameGame
 
     webSocketManager = WebSocketController('ws://192.168.0.103:3000', this);
     if (role == "host") {
-      webSocketManager.makeRoom(hostId);
+      webSocketManager.makeRoom(hostId, this);
     }
     if (role == "visitor") {
       webSocketManager.enterRoom(hostId, myId);
+      enemyId = hostId;
     }
     // if (role == "visitor") {
     //   ready1.makeLarge();

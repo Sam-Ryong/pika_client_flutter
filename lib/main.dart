@@ -157,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                MainScreen(user: user, userinfo: userinfo)),
+                                MainScreen(userinfo: userinfo)),
                       );
                     }
                   },
@@ -306,15 +306,6 @@ class UserProfile extends StatelessWidget {
                   const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             onPressed: () {
-              // Show the waiting dialog immediately
-              showDialog(
-                context: context,
-                builder: (context) => const RankGameWaiting(),
-              );
-
-              // Delay the navigation to the game screen
-
-              Navigator.pop(context); // Close the waiting dialog
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -322,6 +313,7 @@ class UserProfile extends StatelessWidget {
                     role: 'host',
                     myId: userinfo["id"],
                     hostId: userinfo["id"],
+                    userinfo: userinfo,
                   ),
                 ),
               );
@@ -493,6 +485,7 @@ class GameRoomDetail extends StatelessWidget {
                   role: 'visitor',
                   myId: userinfo["id"],
                   hostId: room.id,
+                  userinfo: userinfo,
                 ),
               ),
             );

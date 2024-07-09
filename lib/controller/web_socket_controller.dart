@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flame/components.dart';
+import 'package:pika_client_flutter/controller/server_controller.dart';
 import 'package:pika_client_flutter/hostgame.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -23,23 +24,26 @@ class WebSocketController {
         } else if (type == "playerDir") {
           game.visitor.setPlayerDirection(data["direction"]);
         } else if (type == "ready") {
-          handleReady(game);
+          handleReady(game, data["visitor"]);
         } else if (type == "point") {
           if (data["role"] == "host") {
             game.hostScore.increase();
           } else if (data["role"] == "visitor") {
             game.visitorScore.increase();
           }
-        } else if (type == "visitorOut") {
-          handleVisitorOut(data);
         } else if (type == "noRoom") {
-          handleNoRoom(data);
+          handleNoRoom(game);
         } else if (type == "fullRoom") {
-          handleFullRoom(data);
+          handleFullRoom(game);
         } else if (type == "roomAccess") {
-          handleRoomAccess(data);
+          game.dialog.whenVisitorEnter(data["visitor"], game);
         } else if (type == "permission") {
           handlePermission(data, game);
+        } else if (type == "outDone") {
+          game.dialog.closeDialog();
+          game.dialog.exitGame();
+        } else if (type == "giveUp") {
+          handleGiveUp(game);
         }
       },
       onError: (error) {},
@@ -47,7 +51,8 @@ class WebSocketController {
     );
   }
 
-  void makeRoom(String hostId) {
+  void makeRoom(String hostId, VolleyballGame game) {
+    game.dialog.showWaitingDialog(game);
     Map<String, dynamic> data = {
       'type': "makeRoom",
       'host': hostId,
@@ -138,18 +143,30 @@ class WebSocketController {
   }
 
   //handler 들..
-  void handleVisitorOut(Map<String, dynamic> data) {}
+  void handleGiveUp(VolleyballGame game) async {
+    await postData(
+      "http://192.168.0.103:3001/api/game",
+      {
+        "winner": game.myId,
+        "loser": game.enemyId,
+      },
+    );
+    game.dialog.setIsErrorAndReason("상대방이 경기를 강제 종료했습니다. 몰수 승리 판정입니다.");
+  }
 
-  void handleNoRoom(Map<String, dynamic> data) {}
+  void handleNoRoom(VolleyballGame game) {
+    game.dialog.setIsErrorAndReason("방이 그 순간 삭제 되었나봅니다.");
+  }
 
-  void handleFullRoom(Map<String, dynamic> data) {}
+  void handleFullRoom(VolleyballGame game) {
+    game.dialog.setIsErrorAndReason("방이 게임중이거나 꽉 찼습니다.");
+  }
 
-  void handleRoomAccess(Map<String, dynamic> data) {
-    bool permission = true;
+  void handleRoomAccess(String hostId, String myId, bool permission) {
     Map<String, dynamic> decision = {
       'type': "permission",
-      'host': data["host"],
-      'visitor': data["visitor"],
+      'host': hostId,
+      'visitor': myId,
       'permission': permission
     };
     channel.sink.add(jsonEncode(decision));
@@ -161,7 +178,7 @@ class WebSocketController {
       Map<String, dynamic> ready = {
         'type': "ready",
         'host': data["host"],
-        'visitor': data["visitor"],
+        'visitor': game.myId,
       };
       channel.sink.add(jsonEncode(ready));
 
@@ -174,12 +191,13 @@ class WebSocketController {
       });
       game.isVisitorReady = true;
     } else {
-      outRoom(data["host"], data["visitor"]);
+      game.dialog.setIsBanned();
     }
   }
 
-  void handleReady(VolleyballGame game) {
+  void handleReady(VolleyballGame game, String id) {
     game.isVisitorReady = true;
+    game.enemyId = id;
     game.ready1.makeLarge();
     Future.delayed(const Duration(milliseconds: 1500), () {
       game.ready1.reset();

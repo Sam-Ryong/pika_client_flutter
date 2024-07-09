@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flame/components.dart';
+import 'package:pika_client_flutter/controller/server_controller.dart';
 import 'package:pika_client_flutter/hostgame.dart';
 
 enum NumState {
@@ -43,7 +44,7 @@ class Score extends SpriteGroupComponent<NumState>
     return super.onLoad();
   }
 
-  void increase() {
+  void increase() async {
     if (currentnum < max_score) {
       currentnum++;
       current = NumState.values
@@ -69,11 +70,30 @@ class Score extends SpriteGroupComponent<NumState>
     } else {
       if (game.ball.where) {
         if (game.role == "host") {
+          if (game.isEnd == false) {
+            await postData(
+              "http://192.168.0.103:3001/api/game",
+              {
+                "winner": game.hostId,
+                "loser": game.enemyId,
+              },
+            );
+          }
           game.host.win = true;
         }
 
         if (game.role == "visitor") {
+          if (game.isEnd == false) {
+            await postData(
+              "http://192.168.0.103:3001/api/game",
+              {
+                "winner": game.enemyId,
+                "loser": game.hostId,
+              },
+            );
+          }
           game.host.lose = true;
+          game.dialog.setGameEnd(true);
         }
 
         game.isEnd = true;
