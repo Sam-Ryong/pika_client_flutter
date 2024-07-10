@@ -166,7 +166,7 @@ class WebSocketController {
   //handler 들..
   void handleGiveUp(VolleyballGame game) {
     postData(
-      "http://54.180.157.115/api/game",
+      "http://54.180.157.115:3001/api/game",
       {
         "winner": game.myId,
         "loser": game.enemyId,

@@ -374,13 +374,22 @@ class GameRoomList extends StatelessWidget {
                     '${gameRooms[index].win}승 ${gameRooms[index].lose}패 ${gameRooms[index].tier} ${gameRooms[index].tierPoint}',
                     style: const TextStyle(fontFamily: 'RetroFont')),
                 onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => GameRoomDetail(
-                      room: gameRooms[index],
-                      userinfo: userinfo,
-                    ),
-                  );
+                  (gameRooms.isEmpty || userinfo == null)
+                      ? showDialog(
+                          context: context,
+                          builder: (context) => GameRoomDetail(
+                            room: gameRooms[index],
+                            userinfo: userinfo,
+                          ),
+                        )
+                      : showDialog(
+                          context: context,
+                          builder: (context) => GameRoomDetail(
+                            room:
+                                GameRoom("게임이 존재하지 않습니다", 0, 0, "NONE", 0, ""),
+                            userinfo: userinfo,
+                          ),
+                        );
                 },
               );
             },
@@ -426,7 +435,7 @@ class RankingList extends StatelessWidget {
                 leading: CircleAvatar(child: Text((index + 1).toString())),
                 title: Text(item['name']),
                 subtitle: Text(
-                    '${item['win']}승 ${item['win']}패 승률 ${item["win"] + item["lose"] != 0 ? (item["win"] / (item["win"] + item["lose"]) * 100) : 0} % ${item['tierPoint']} point'),
+                    '${item['win']}승 ${item['lose']}패 승률 ${item["win"] + item["lose"] != 0 ? (item["win"] / (item["win"] + item["lose"]) * 100) : 0} % ${item['tierPoint']} point'),
                 trailing: Text(item['tier']),
               );
             },
@@ -467,7 +476,7 @@ class UserDetail extends StatelessWidget {
                     CircleAvatar(child: Text((rank + index + 1).toString())),
                 title: Text(item['name']),
                 subtitle: Text(
-                    '${item['win']}승 ${item['win']}패 승률 ${item["win"] + item["lose"] != 0 ? (item["win"] / (item["win"] + item["lose"]) * 100) : 0} % ${item['tierPoint']} point'),
+                    '${item['win']}승 ${item['lose']}패 승률 ${item["win"] + item["lose"] != 0 ? (item["win"] / (item["win"] + item["lose"]) * 100) : 0} % ${item['tierPoint']} point'),
                 trailing: Text(item['tier']),
               );
             },
@@ -496,23 +505,26 @@ class GameRoomDetail extends StatelessWidget {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => VolleyballGameWidget(
-                  role: 'visitor',
-                  myId: userinfo["id"],
-                  hostId: room.id,
-                  userinfo: userinfo,
-                ),
+        (room.id == "")
+            ? TextButton(onPressed: () {}, child: Text(""))
+            : TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => VolleyballGameWidget(
+                        role: 'visitor',
+                        myId: userinfo["id"],
+                        hostId: room.id,
+                        userinfo: userinfo,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('입장하기',
+                    style: TextStyle(fontFamily: 'RetroFont')),
               ),
-            );
-          },
-          child: const Text('입장하기', style: TextStyle(fontFamily: 'RetroFont')),
-        ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
