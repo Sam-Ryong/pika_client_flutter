@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 import 'package:pika_client_flutter/components/ball_clone.dart';
 import 'package:pika_client_flutter/components/collision_block.dart';
@@ -48,8 +49,9 @@ class PikaBall extends SpriteAnimationGroupComponent
   Vector2 visitSpawn = Vector2(0, 0);
   int dtCount = 0;
   bool isScoring = false;
-  late String hostId = game.hostId;
+  late String enemyId = game.enemyId;
   late String myId = game.myId;
+  late String hostId = game.hostId;
 
   bool where = true;
   bool ready = true;
@@ -107,6 +109,10 @@ class PikaBall extends SpriteAnimationGroupComponent
       position = visitSpawn;
     }
     isScoring = false;
+    spike.invisible();
+    shadow1.invisible();
+    shadow2.invisible();
+    isSpiked = false;
     velocity = Vector2(0, 0);
   }
 
@@ -150,6 +156,10 @@ class PikaBall extends SpriteAnimationGroupComponent
       velocity.y = -velocity.y / velocity.y * 400;
       game.webSocketManager.sendBallState(hostId, myId, "n");
     } else {
+      if (game.playSounds) {
+        FlameAudio.play("hit.wav", volume: game.soundVolume);
+        game.webSocketManager.sendSound(game, "hit");
+      }
       isSpiked = true;
       current = BallState.normal;
       spike.visible();
@@ -178,7 +188,7 @@ class PikaBall extends SpriteAnimationGroupComponent
         }
       }
       if (!player.left && !player.right && !player.up && !player.down) {
-        velocity.x = 300;
+        velocity.x = player.isFacingRight * 300;
         velocity.y = 0;
       }
     }
@@ -225,17 +235,25 @@ class PikaBall extends SpriteAnimationGroupComponent
       if (!isScoring && game.role == "host") {
         if (block.isHost) {
           if (checkCollision(this, block)) {
-            visitorScore.increase();
-            game.webSocketManager.sendPoint(hostId, myId, "visitor");
+            if (game.playSounds) {
+              FlameAudio.play("score.wav", volume: game.soundVolume);
+              game.webSocketManager.sendSound(game, "score");
+            }
             where = false;
             isScoring = true;
+            visitorScore.increase();
+            game.webSocketManager.sendPoint(enemyId, myId, "visitor");
           }
         } else if (block.isVisit) {
           if (checkCollision(this, block)) {
-            hostScore.increase();
-            game.webSocketManager.sendPoint(hostId, myId, "host");
+            if (game.playSounds) {
+              FlameAudio.play("score.wav", volume: game.soundVolume);
+              game.webSocketManager.sendSound(game, "score");
+            }
             where = true;
             isScoring = true;
+            hostScore.increase();
+            game.webSocketManager.sendPoint(enemyId, myId, "host");
           }
         }
       }
@@ -268,17 +286,25 @@ class PikaBall extends SpriteAnimationGroupComponent
       if (!isScoring && game.role == "host") {
         if (block.isHost) {
           if (checkCollision(this, block)) {
-            visitorScore.increase();
-            game.webSocketManager.sendPoint(hostId, myId, "visitor");
+            if (game.playSounds) {
+              FlameAudio.play("score.wav", volume: game.soundVolume);
+              game.webSocketManager.sendSound(game, "score");
+            }
             where = false;
             isScoring = true;
+            visitorScore.increase();
+            game.webSocketManager.sendPoint(hostId, myId, "visitor");
           }
         } else if (block.isVisit) {
           if (checkCollision(this, block)) {
-            hostScore.increase();
-            game.webSocketManager.sendPoint(hostId, myId, "host");
+            if (game.playSounds) {
+              FlameAudio.play("score.wav", volume: game.soundVolume);
+              game.webSocketManager.sendSound(game, "score");
+            }
             where = true;
             isScoring = true;
+            hostScore.increase();
+            game.webSocketManager.sendPoint(hostId, myId, "host");
           }
         }
       }

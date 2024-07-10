@@ -44,6 +44,8 @@ class VolleyballGame extends FlameGame
   late final CameraComponent cam;
   late JoystickComponent joystick;
   bool showControls = true;
+  bool playSounds = true;
+  double soundVolume = 1.0;
 
   VolleyballGame(this.role, this.myId, this.hostId, this.dialog);
   @override
@@ -81,12 +83,12 @@ class VolleyballGame extends FlameGame
       add(SpikeButton());
     }
 
-    webSocketManager = WebSocketController('ws://192.168.0.103:3000', this);
+    webSocketManager = WebSocketController('ws://54.180.157.115:3000', this);
     if (role == "host") {
       webSocketManager.makeRoom(hostId, this);
     }
     if (role == "visitor") {
-      webSocketManager.enterRoom(hostId, myId);
+      webSocketManager.enterRoom(hostId, myId, this);
       enemyId = hostId;
     }
     // if (role == "visitor") {
@@ -128,20 +130,24 @@ class VolleyballGame extends FlameGame
   void permiting() {}
 
   void addJoystick() {
+    final screenSize = size;
     joystick = JoystickComponent(
       priority: 10,
       knob: SpriteComponent(
+        size: Vector2.all(75),
         sprite: Sprite(
           images.fromCache("HUD/Knob.png"),
         ),
       ),
-      knobRadius: 100,
+      knobRadius: 200,
       background: SpriteComponent(
+        size: Vector2.all(150),
         sprite: Sprite(
           images.fromCache("HUD/Joystick.png"),
         ),
       ),
-      margin: const EdgeInsets.only(right: 64, bottom: 64),
+      //margin: const EdgeInsets.only(right: 128, bottom: 128),
+      position: Vector2((screenSize.x / 2) * 1.8, screenSize.y * 0.75),
     );
     add(joystick);
   }

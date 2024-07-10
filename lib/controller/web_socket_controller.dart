@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:pika_client_flutter/controller/server_controller.dart';
 import 'package:pika_client_flutter/hostgame.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -31,6 +32,10 @@ class WebSocketController {
           } else if (data["role"] == "visitor") {
             game.visitorScore.increase();
           }
+        } else if (type == "sound") {
+          if (game.playSounds) {
+            FlameAudio.play("${data["sound"]}.wav", volume: game.soundVolume);
+          }
         } else if (type == "noRoom") {
           handleNoRoom(game);
         } else if (type == "fullRoom") {
@@ -60,16 +65,22 @@ class WebSocketController {
     channel.sink.add(jsonEncode(data));
   }
 
-  void outRoom(String hostId, String myId) {
+  void outRoom(String hostId, String myId, VolleyballGame game) {
     Map<String, dynamic> data = {
       'type': "outRoom",
       'host': hostId,
       "visitor": myId,
     };
-    channel.sink.add(jsonEncode(data));
+    try {
+      channel.sink.add(jsonEncode(data));
+    } catch (err) {
+      game.dialog.closeDialog();
+      game.dialog.exitGame();
+    }
   }
 
-  void enterRoom(String hostId, String myId) {
+  void enterRoom(String hostId, String myId, VolleyballGame game) {
+    game.dialog.showWaitingDialog(game);
     Map<String, dynamic> data = {
       'type': "enterRoom",
       'host': hostId,
@@ -81,13 +92,23 @@ class WebSocketController {
   void sendPlayerInfo(
       String hostId, String myId, Vector2 position, dynamic current) {
     String pos = "$position";
-    String cur = "$current";
+    String cur = "$current".substring(12);
     Map<String, dynamic> data = {
       'type': "playerInfo",
       'host': hostId,
       'visitor': myId,
       "position": pos,
       "current": cur,
+    };
+    channel.sink.add(jsonEncode(data));
+  }
+
+  void sendSound(VolleyballGame game, String sound) {
+    Map<String, dynamic> data = {
+      'type': "sound",
+      'host': game.hostId,
+      'visitor': game.myId,
+      "sound": sound,
     };
     channel.sink.add(jsonEncode(data));
   }
@@ -143,23 +164,25 @@ class WebSocketController {
   }
 
   //handler 들..
-  void handleGiveUp(VolleyballGame game) async {
-    await postData(
-      "http://192.168.0.103:3001/api/game",
+  void handleGiveUp(VolleyballGame game) {
+    postData(
+      "http://54.180.157.115/api/game",
       {
         "winner": game.myId,
         "loser": game.enemyId,
       },
     );
-    game.dialog.setIsErrorAndReason("상대방이 경기를 강제 종료했습니다. 몰수 승리 판정입니다.");
+    game.dialog.setIsErrorAndReason("상대방이 경기를 강제 종료했습니다. 몰수 승리 판정입니다.", game);
   }
 
   void handleNoRoom(VolleyballGame game) {
-    game.dialog.setIsErrorAndReason("방이 그 순간 삭제 되었나봅니다.");
+    game.dialog.closeDialog();
+    game.dialog.setIsErrorAndReason("방이 그 순간 삭제 되었나봅니다.", game);
   }
 
   void handleFullRoom(VolleyballGame game) {
-    game.dialog.setIsErrorAndReason("방이 게임중이거나 꽉 찼습니다.");
+    game.dialog.closeDialog();
+    game.dialog.setIsErrorAndReason("방이 게임중이거나 꽉 찼습니다.", game);
   }
 
   void handleRoomAccess(String hostId, String myId, bool permission) {
@@ -181,7 +204,7 @@ class WebSocketController {
         'visitor': game.myId,
       };
       channel.sink.add(jsonEncode(ready));
-
+      game.dialog.closeDialog();
       game.ready1.makeLarge();
       Future.delayed(const Duration(milliseconds: 1500), () {
         game.ready1.reset();
@@ -191,7 +214,7 @@ class WebSocketController {
       });
       game.isVisitorReady = true;
     } else {
-      game.dialog.setIsBanned();
+      game.dialog.setIsBanned(game);
     }
   }
 

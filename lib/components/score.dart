@@ -24,7 +24,7 @@ enum NumState {
 class Score extends SpriteGroupComponent<NumState>
     with HasGameRef<VolleyballGame> {
   Score();
-  final int max_score = 15;
+  final int max_score = 5;
   late Map<NumState, Sprite> temp;
   int currentnum = 1;
 
@@ -44,7 +44,7 @@ class Score extends SpriteGroupComponent<NumState>
     return super.onLoad();
   }
 
-  void increase() async {
+  void increase() {
     if (currentnum < max_score) {
       currentnum++;
       current = NumState.values
@@ -71,41 +71,45 @@ class Score extends SpriteGroupComponent<NumState>
       if (game.ball.where) {
         if (game.role == "host") {
           if (game.isEnd == false) {
-            await postData(
-              "http://192.168.0.103:3001/api/game",
+            game.isEnd = true;
+            game.host.win = true;
+            game.dialog.setGameEnd(game);
+            postData(
+              "http://54.180.157.115:3001/api/game",
               {
                 "winner": game.hostId,
                 "loser": game.enemyId,
               },
             );
           }
-          game.host.win = true;
         }
 
         if (game.role == "visitor") {
+          game.isEnd = true;
+          game.host.lose = true;
+          game.dialog.setGameEnd(game);
+        }
+      } else {
+        if (game.role == "host") {
           if (game.isEnd == false) {
-            await postData(
-              "http://192.168.0.103:3001/api/game",
+            game.isEnd = true;
+            game.host.lose = true;
+            game.dialog.setGameEnd(game);
+            postData(
+              "http://54.180.157.115:3001/api/game",
               {
                 "winner": game.enemyId,
                 "loser": game.hostId,
               },
             );
           }
-          game.host.lose = true;
-          game.dialog.setGameEnd(true);
-        }
-
-        game.isEnd = true;
-      } else {
-        if (game.role == "host") {
-          game.host.lose = true;
         }
 
         if (game.role == "visitor") {
           game.host.win = true;
+          game.isEnd = true;
+          game.dialog.setGameEnd(game);
         }
-        game.isEnd = true;
       }
     }
   }

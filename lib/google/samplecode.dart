@@ -24,7 +24,7 @@ Future<GoogleSignInAccount?> signInWithGoogle() async {
 }
 
 class SampleScreen extends StatefulWidget {
-  const SampleScreen({Key? key}) : super(key: key);
+  const SampleScreen({super.key});
 
   @override
   State<SampleScreen> createState() => _SampleScreenState();
@@ -110,7 +110,7 @@ class _SampleScreenState extends State<SampleScreen> {
     return ElevatedButton(
       onPressed: signOut,
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all(
+        backgroundColor: WidgetStateProperty.all(
           const Color(0xff0165E1),
         ),
       ),

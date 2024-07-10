@@ -90,12 +90,15 @@ class PikaDummyPlayer extends SpriteAnimationGroupComponent
         break;
       case "jump":
         current = PlayerState.jump;
+
         break;
       case "spike":
         current = PlayerState.spike;
+
         break;
       case "dash":
         current = PlayerState.dash;
+
         break;
       case "win":
         current = PlayerState.win;

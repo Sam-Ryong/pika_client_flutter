@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 import "package:flutter/services.dart";
 import 'package:pika_client_flutter/components/ball.dart';
 import 'package:pika_client_flutter/components/collision_block.dart';
@@ -239,6 +240,10 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   }
 
   void _playerDash(double dt) {
+    if (game.playSounds) {
+      FlameAudio.play("jump.wav", volume: game.soundVolume);
+      game.webSocketManager.sendSound(game, "jump");
+    }
     velocity.y = -_jumpforce * 0.5;
     position.y += velocity.y * dt;
     //isJumping = true;
@@ -248,6 +253,10 @@ class PikaPlayer extends SpriteAnimationGroupComponent
   }
 
   void _playerJump(double dt) {
+    if (game.playSounds) {
+      FlameAudio.play("jump.wav", volume: game.soundVolume);
+      game.webSocketManager.sendSound(game, "jump");
+    }
     velocity.y = -_jumpforce;
     position.y += velocity.y * dt;
     //isJumping = true;

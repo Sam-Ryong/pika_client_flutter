@@ -21,7 +21,7 @@ class VisitorEnterDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: getData('http://192.168.0.103:3001/api/user/$id'),
+        future: getData('http://54.180.157.115:3001/api/user/$id'),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -42,11 +42,11 @@ class VisitorEnterDialog extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => {setPermission(game, true, context)},
-                  child: Text('승락'),
+                  child: const Text('승락'),
                 ),
                 TextButton(
                   onPressed: () => {setPermission(game, false, context)},
-                  child: Text('거절'),
+                  child: const Text('거절'),
                 ),
               ],
             );
@@ -58,7 +58,9 @@ class VisitorEnterDialog extends StatelessWidget {
       VolleyballGame game, bool permission, BuildContext context) {
     game.webSocketManager.handleRoomAccess(hostId, myId, permission);
     Navigator.of(context, rootNavigator: true).pop();
-    dialog.closeDialog();
+    if (permission) {
+      dialog.closeDialog();
+    }
   }
 }
 
@@ -77,7 +79,7 @@ class WaitingDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('대기중'),
+      title: const Text('대기중'),
       content: Column(
         children: [
           const CircularProgressIndicator(),
@@ -88,10 +90,107 @@ class WaitingDialog extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () => {game.webSocketManager.outRoom(hostId, myId)},
-          child: Text('나가기'),
+          onPressed: () => {game.webSocketManager.outRoom(hostId, myId, game)},
+          child: const Text('나가기'),
         ),
       ],
     );
+  }
+}
+
+class EndingDialog extends StatelessWidget {
+  const EndingDialog(
+      {super.key,
+      required this.game,
+      required this.hostId,
+      required this.myId,
+      required this.role});
+  final VolleyballGame game;
+  final String hostId;
+  final String myId;
+  final String role;
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('경기 끝'),
+      content: const Column(
+        children: [
+          CircularProgressIndicator(),
+          Text("승자는 20점을 얻고 패자는 20점을 잃습니다."),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => {game.webSocketManager.outRoom(hostId, myId, game)},
+          child: const Text('나가기'),
+        ),
+      ],
+    );
+  }
+}
+
+class EnterErrorDialog extends StatelessWidget {
+  const EnterErrorDialog(
+      {super.key,
+      required this.game,
+      required this.hostId,
+      required this.myId,
+      required this.role,
+      required this.reason});
+  final VolleyballGame game;
+  final String hostId;
+  final String myId;
+  final String role;
+  final String reason;
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('에러'),
+      content: Column(
+        children: [Text(reason), const Text("게임에서 나갑니다.")],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => {errorProcess(hostId, myId, game)},
+          child: const Text('확인'),
+        ),
+      ],
+    );
+  }
+
+  void errorProcess(String hostId, String myId, VolleyballGame game) {
+    game.webSocketManager.outRoom(hostId, myId, game);
+  }
+}
+
+class YouAreBannedDialog extends StatelessWidget {
+  const YouAreBannedDialog(
+      {super.key,
+      required this.game,
+      required this.hostId,
+      required this.myId,
+      required this.role});
+  final VolleyballGame game;
+  final String hostId;
+  final String myId;
+  final String role;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('거절'),
+      content: const Text('입장을 거절 당하셨습니다.'),
+      actions: [
+        TextButton(
+          onPressed: () => {banProcess(hostId, myId, game)},
+          child: const Text('확인'),
+        ),
+      ],
+    );
+  }
+
+  void banProcess(String hostId, String myId, VolleyballGame game) {
+    game.dialog.closeDialog();
+    game.webSocketManager.outRoom(hostId, myId, game);
   }
 }

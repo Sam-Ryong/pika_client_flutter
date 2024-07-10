@@ -120,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Text("피카츄배구 온라인",
                     style: TextStyle(
                         fontFamily: 'RetroFont',
-                        color: Colors.yellow,
+                        color: const Color.fromARGB(255, 255, 41, 226),
                         fontSize: 48,
                         fontWeight: FontWeight.w500)),
               ),
@@ -141,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     final GoogleSignInAccount? user = await signInWithGoogle();
                     if (user != null) {
                       await postData(
-                        "http://192.168.0.103:3001/api/user",
+                        "http://54.180.157.115:3001/api/user",
                         {
                           "id": user.id,
                           "name": user.displayName,
@@ -151,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     }
                     final userinfo = await getData(
-                        "http://192.168.0.103:3001/api/user/${user!.id}");
+                        "http://54.180.157.115:3001/api/user/${user!.id}");
                     if (userinfo != null) {
                       Navigator.pushReplacement(
                         context,
@@ -165,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     '구글로 로그인',
                     style: TextStyle(
                       fontFamily: 'RetroFont',
-                      color: Colors.blueAccent[400],
+                      color: const Color.fromARGB(255, 255, 41, 226),
                     ),
                   ),
                 ),
@@ -187,10 +187,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                   },
                   child: Text(
-                    '카카오로 로그인',
+                    'Remade By 2019102243 홍승표',
                     style: TextStyle(
                       fontFamily: 'RetroFont',
-                      color: Colors.blueAccent[400],
+                      //color: Colors.blueAccent[400],
+                      color: const Color.fromARGB(255, 255, 41, 226),
+                      fontSize: 12,
                     ),
                   ),
                 ),
@@ -214,7 +216,7 @@ class MainScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     lightWebSocketController =
-        LightWebSocketController('ws://192.168.0.103:3000', gameRoomList);
+        LightWebSocketController('ws://54.180.157.115:3000', gameRoomList);
 
     gameRoomList.lightWebSocketController = lightWebSocketController;
     gameRoomList.userinfo = userinfo;
@@ -372,7 +374,7 @@ class GameRoomList extends StatelessWidget {
 
     for (int i = 0; i < gameRoomList.length; i++) {
       dynamic userinfo = await getData(
-          "http://192.168.0.103:3001/api/user/${gameRoomList[i]}");
+          "http://54.180.157.115:3001/api/user/${gameRoomList[i]}");
       temp.add(GameRoom(userinfo["name"], userinfo["win"], userinfo["lose"],
           userinfo["tier"], userinfo["tierPoint"], userinfo["id"]));
     }
@@ -386,7 +388,7 @@ class RankingList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getData("http://192.168.0.103:3001/api/rank"),
+      future: getData("http://54.180.157.115:3001/api/rank"),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -424,7 +426,7 @@ class UserDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return FutureBuilder(
       future:
-          getData("http://192.168.0.103:3001/api/rank/user/${userinfo["id"]}"),
+          getData("http://54.180.157.115:3001/api/rank/user/${userinfo["id"]}"),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
