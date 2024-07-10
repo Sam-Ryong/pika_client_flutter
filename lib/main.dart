@@ -244,7 +244,7 @@ class MainScreen extends StatelessWidget {
             Expanded(
               flex: 1,
               child: UserProfile(
-                userinfo: userinfo,
+                user: userinfo,
               ),
             ),
             Expanded(
@@ -267,70 +267,89 @@ class MainScreen extends StatelessWidget {
 }
 
 class UserProfile extends StatelessWidget {
-  final dynamic userinfo;
-  const UserProfile({super.key, required this.userinfo});
+  final dynamic user;
+  const UserProfile({super.key, required this.user});
   //print('name = ${googleUser.displayName}');
   //print('email = ${googleUser.email}');
   //print('id = ${googleUser.id}');
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      color: Colors.yellow.shade100,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(
-            radius: 25,
-            backgroundImage: (userinfo?["photoUrl"] != null)
-                ? NetworkImage(userinfo?["photoUrl"])
-                : null,
-          ),
-          const SizedBox(height: 10),
-          Text('${userinfo?["name"]}',
-              style: const TextStyle(fontSize: 10, fontFamily: 'RetroFont')),
-          Text('${userinfo?["email"]}',
-              style: const TextStyle(fontSize: 10, fontFamily: 'RetroFont')),
-          const SizedBox(height: 10),
-          Text(
-              '${userinfo?["win"]}승 ${userinfo?["lose"]}패 승률 ${userinfo?["win"] + userinfo?["lose"] != 0 ? (userinfo?["win"] / (userinfo?["win"] + userinfo?["lose"]) * 100) : 0} %',
-              style: const TextStyle(fontSize: 14, fontFamily: 'RetroFont')),
-          const SizedBox(height: 10),
-          Text('${userinfo?["tier"]} ${userinfo?["tierPoint"]}p',
-              style: const TextStyle(fontSize: 14, fontFamily: 'RetroFont')),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              textStyle:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => VolleyballGameWidget(
-                    role: 'host',
-                    myId: userinfo["id"],
-                    hostId: userinfo["id"],
-                    userinfo: userinfo,
+    String id = user?["id"];
+    return FutureBuilder(
+        future: getData("http://54.180.157.115:3001/api/user/$id"),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Center(child: Text('No data available'));
+          } else {
+            dynamic userinfo = snapshot.data;
+            return Container(
+              padding: const EdgeInsets.all(16),
+              color: Colors.yellow.shade100,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage: (userinfo?["photoUrl"] != null)
+                        ? NetworkImage(userinfo?["photoUrl"])
+                        : null,
                   ),
-                ),
-              );
-            },
-            child: const Text(
-              '방 만들기',
-              style: TextStyle(
-                fontFamily: 'RetroFont',
-                color: Colors.yellow,
+                  const SizedBox(height: 10),
+                  Text('${userinfo?["name"]}',
+                      style: const TextStyle(
+                          fontSize: 10, fontFamily: 'RetroFont')),
+                  Text('${userinfo?["email"]}',
+                      style: const TextStyle(
+                          fontSize: 10, fontFamily: 'RetroFont')),
+                  const SizedBox(height: 10),
+                  Text(
+                      '${userinfo?["win"]}승 ${userinfo?["lose"]}패 승률 ${userinfo?["win"] + userinfo?["lose"] != 0 ? (userinfo?["win"] / (userinfo?["win"] + userinfo?["lose"]) * 100) : 0} %',
+                      style: const TextStyle(
+                          fontSize: 14, fontFamily: 'RetroFont')),
+                  const SizedBox(height: 10),
+                  Text('${userinfo?["tier"]} ${userinfo?["tierPoint"]}p',
+                      style: const TextStyle(
+                          fontSize: 14, fontFamily: 'RetroFont')),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 16),
+                      textStyle: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VolleyballGameWidget(
+                            role: 'host',
+                            myId: userinfo["id"],
+                            hostId: userinfo["id"],
+                            userinfo: userinfo,
+                          ),
+                        ),
+                      );
+                    },
+                    child: const Text(
+                      '방 만들기',
+                      style: TextStyle(
+                        fontFamily: 'RetroFont',
+                        color: Colors.yellow,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
+            );
+          }
+        });
   }
 }
 
@@ -352,7 +371,7 @@ class GameRoomList extends StatelessWidget {
                 title: Text("${gameRooms[index].name}의 게임",
                     style: const TextStyle(fontFamily: 'RetroFont')),
                 subtitle: Text(
-                    '${gameRooms[index].win}승 ${gameRooms[index].win}패 ${gameRooms[index].tier} ${gameRooms[index].tierPoint}',
+                    '${gameRooms[index].win}승 ${gameRooms[index].lose}패 ${gameRooms[index].tier} ${gameRooms[index].tierPoint}',
                     style: const TextStyle(fontFamily: 'RetroFont')),
                 onTap: () {
                   showDialog(
@@ -480,7 +499,7 @@ class GameRoomDetail extends StatelessWidget {
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => VolleyballGameWidget(

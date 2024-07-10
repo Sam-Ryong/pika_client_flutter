@@ -24,7 +24,7 @@ enum NumState {
 class Score extends SpriteGroupComponent<NumState>
     with HasGameRef<VolleyballGame> {
   Score();
-  final int max_score = 5;
+  final int max_score = 15;
   late Map<NumState, Sprite> temp;
   int currentnum = 1;
 

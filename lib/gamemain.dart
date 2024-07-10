@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'package:pika_client_flutter/gamedialog.dart';
 import 'package:pika_client_flutter/hostgame.dart';
+import 'package:pika_client_flutter/main.dart';
 // import 'package:pika_client_flutter/visitorgame.dart';
 
 class VolleyballGameWidget extends StatefulWidget {
@@ -105,9 +106,9 @@ class VolleyballGameWidgetState extends State<VolleyballGameWidget> {
   }
 
   void exitGame() {
-    //dynamic info = widget.userinfo;
-    Navigator.pop(context);
-    /*
+    dynamic info = widget.userinfo;
+    // Navigator.pop(context);
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -115,7 +116,6 @@ class VolleyballGameWidgetState extends State<VolleyballGameWidget> {
                 userinfo: info,
               )),
     );
-    */
   }
 
   @override
