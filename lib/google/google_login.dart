@@ -10,6 +10,8 @@ enum LoginPlatform {
   none, // logout
 }
 
+// 사용되지 않은 코드는 정량 평가 항목에 반영하지 않았습니다.
+// 이 코드의 전부가 사용되지는 않습니다.
 Future<GoogleSignInAccount?> signInWithGoogle() async {
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 

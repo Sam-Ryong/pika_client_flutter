@@ -7,7 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pika_client_flutter/controller/light_web_socket_controller.dart';
 import 'package:pika_client_flutter/controller/server_controller.dart';
 import 'package:pika_client_flutter/gamemain.dart';
-import 'package:pika_client_flutter/google/samplecode.dart';
+import 'package:pika_client_flutter/google/google_login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +17,6 @@ void main() async {
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]);
-
   runApp(const MyApp());
 }
 
@@ -368,7 +367,6 @@ class GameRoomListState extends State<GameRoomList> {
     super.initState();
     lightWebSocketController =
         LightWebSocketController('ws://54.180.157.115:3000', this);
-    print("connect");
 
     lightWebSocketController.getRooms("temp");
     startPeriodicUpdate();
@@ -384,7 +382,6 @@ class GameRoomListState extends State<GameRoomList> {
   void dispose() {
     timer?.cancel();
     lightWebSocketController.close();
-    print("close");
     super.dispose();
   }
 
