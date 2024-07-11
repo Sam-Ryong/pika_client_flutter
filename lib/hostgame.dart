@@ -40,11 +40,12 @@ class VolleyballGame extends FlameGame
   final VolleyballGameWidgetState dialog;
 
   DarkOverlayComponent darkOverlay = DarkOverlayComponent();
-
+  bool first = true;
   late final CameraComponent cam;
   late JoystickComponent joystick;
   bool showControls = true;
   bool playSounds = true;
+  bool ballLock = false;
   double soundVolume = 1.0;
 
   VolleyballGame(this.role, this.myId, this.hostId, this.dialog);
@@ -115,9 +116,17 @@ class VolleyballGame extends FlameGame
       if (!isEnd) {
         darkOverlay.darken(0.02);
       }
+    } else if (slow == 0) {
+      if (!first) {
+        ball.respawn();
+        first = false;
+      }
+      super.update(dt * slow);
+    } else if (slow == 1) {
+      super.update(dt * slow);
+    } else {
+      super.update(dt * slow);
     }
-
-    super.update(dt * slow);
   }
 
   @override

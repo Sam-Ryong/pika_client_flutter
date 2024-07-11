@@ -44,14 +44,14 @@ class Score extends SpriteGroupComponent<NumState>
     return super.onLoad();
   }
 
-  void increase() {
+  void increase(bool where) {
     if (currentnum < max_score) {
       currentnum++;
       current = NumState.values
           .firstWhere((e) => e.toString().split('.').last == "n$currentnum");
     }
     game.slow = 0.3;
-
+    game.ball.where = where;
     if (currentnum < max_score) {
       Future.delayed(const Duration(seconds: 1), () {
         game.host.respawn();

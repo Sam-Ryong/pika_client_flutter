@@ -5,7 +5,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 class LightWebSocketController {
   late WebSocketChannel channel;
 
-  LightWebSocketController(String url, GameRoomList gameRooms) {
+  LightWebSocketController(String url, GameRoomListState gameRooms) {
     channel = WebSocketChannel.connect(Uri.parse(url));
     channel.stream.listen(
       (message) {
@@ -18,6 +18,9 @@ class LightWebSocketController {
       onError: (error) {},
       onDone: () {},
     );
+  }
+  void close() {
+    channel.sink.close();
   }
 
   void getRooms(String myId) {

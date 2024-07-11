@@ -52,6 +52,7 @@ class PikaBall extends SpriteAnimationGroupComponent
   late String enemyId = game.enemyId;
   late String myId = game.myId;
   late String hostId = game.hostId;
+  bool ballLock = false;
 
   bool where = true;
   bool ready = true;
@@ -89,16 +90,22 @@ class PikaBall extends SpriteAnimationGroupComponent
       }
       dtCount = 0;
     }
-
     position.x += velocity.x * dt;
     shadow1.position = previousPositions[1];
     shadow2.position = previousPositions[0];
     spike.position = position;
     dtCount++;
-    if (game.role == "host") {
+    if (game.role == "host" && (position.x < 192)) {
       game.webSocketManager.sendBallInfo(hostId, myId, position, velocity);
     }
 
+    if (game.role == "visitor" && (position.x >= 192)) {
+      game.webSocketManager.sendBallInfo(hostId, myId, position, velocity);
+    }
+    if (ballLock) {
+      respawn();
+      ballLock = false;
+    }
     super.update(dt);
   }
 
@@ -192,9 +199,13 @@ class PikaBall extends SpriteAnimationGroupComponent
         velocity.y = 0;
       }
     }
-    if (game.role == "visitor") {
-      game.webSocketManager.sendBallInfo(hostId, myId, position, velocity);
-    }
+    // if (game.role == "host" && ((position.x + size.x) < (game.size.x / 2))) {
+    // game.webSocketManager.sendBallInfo(hostId, myId, position, velocity);
+    // }
+
+    // if (game.role == "visitor" && ((position.x + size.x) >= (game.size.x / 2))) {
+    // game.webSocketManager.sendBallInfo(hostId, myId, position, velocity);
+    // }
   }
 
   void _loadAllAnimations() {
@@ -232,17 +243,20 @@ class PikaBall extends SpriteAnimationGroupComponent
   */
   void _checkHorizontalCollisions() {
     for (final block in collisionBlocks) {
-      if (!isScoring && game.role == "host") {
+      if (!isScoring) {
         if (block.isHost) {
           if (checkCollision(this, block)) {
             if (game.playSounds) {
               FlameAudio.play("score.wav", volume: game.soundVolume);
               game.webSocketManager.sendSound(game, "score");
             }
-            where = false;
-            isScoring = true;
-            visitorScore.increase();
-            game.webSocketManager.sendPoint(enemyId, myId, "visitor");
+
+            //visitorScore.increase();
+            if (game.role == "host") {
+              where = false;
+              isScoring = true;
+              game.webSocketManager.sendPoint(myId, myId, "visitor");
+            }
           }
         } else if (block.isVisit) {
           if (checkCollision(this, block)) {
@@ -250,10 +264,13 @@ class PikaBall extends SpriteAnimationGroupComponent
               FlameAudio.play("score.wav", volume: game.soundVolume);
               game.webSocketManager.sendSound(game, "score");
             }
-            where = true;
-            isScoring = true;
-            hostScore.increase();
-            game.webSocketManager.sendPoint(enemyId, myId, "host");
+
+            // hostScore.increase();
+            if (game.role == "visitor") {
+              where = true;
+              isScoring = true;
+              game.webSocketManager.sendPoint(game.hostId, game.hostId, "host");
+            }
           }
         }
       }
@@ -283,17 +300,20 @@ class PikaBall extends SpriteAnimationGroupComponent
 
   void _checkVerticalCollisions() {
     for (final block in collisionBlocks) {
-      if (!isScoring && game.role == "host") {
+      if (!isScoring) {
         if (block.isHost) {
           if (checkCollision(this, block)) {
             if (game.playSounds) {
               FlameAudio.play("score.wav", volume: game.soundVolume);
               game.webSocketManager.sendSound(game, "score");
             }
-            where = false;
-            isScoring = true;
-            visitorScore.increase();
-            game.webSocketManager.sendPoint(hostId, myId, "visitor");
+
+            // visitorScore.increase();
+            if (game.role == "host") {
+              where = false;
+              isScoring = true;
+              game.webSocketManager.sendPoint(hostId, myId, "visitor");
+            }
           }
         } else if (block.isVisit) {
           if (checkCollision(this, block)) {
@@ -301,10 +321,13 @@ class PikaBall extends SpriteAnimationGroupComponent
               FlameAudio.play("score.wav", volume: game.soundVolume);
               game.webSocketManager.sendSound(game, "score");
             }
-            where = true;
-            isScoring = true;
-            hostScore.increase();
-            game.webSocketManager.sendPoint(hostId, myId, "host");
+
+            // hostScore.increase();
+            if (game.role == "visitor") {
+              where = true;
+              isScoring = true;
+              game.webSocketManager.sendPoint(game.hostId, game.hostId, "host");
+            }
           }
         }
       }

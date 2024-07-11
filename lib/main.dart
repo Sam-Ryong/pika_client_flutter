@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flame/extensions.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
@@ -210,17 +209,11 @@ class MainScreen extends StatelessWidget {
   final GoogleSignInAccount? user;
   final dynamic userinfo;
   final GameRoomList gameRoomList = GameRoomList();
-  late LightWebSocketController lightWebSocketController;
   MainScreen({super.key, this.user, this.userinfo});
 
   @override
   Widget build(BuildContext context) {
-    lightWebSocketController =
-        LightWebSocketController('ws://54.180.157.115:3000', gameRoomList);
-
-    gameRoomList.lightWebSocketController = lightWebSocketController;
     gameRoomList.userinfo = userinfo;
-    lightWebSocketController.getRooms("temp");
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -354,15 +347,64 @@ class UserProfile extends StatelessWidget {
 }
 
 // ignore: must_be_immutable
-class GameRoomList extends StatelessWidget {
-  List<GameRoom> gameRooms = [];
-  dynamic userinfo;
-  GameRoomList({super.key, this.userinfo});
+class GameRoomList extends StatefulWidget {
+  late dynamic userinfo;
   late LightWebSocketController lightWebSocketController;
+
+  GameRoomList({Key? key, this.userinfo}) : super(key: key);
+
+  @override
+  GameRoomListState createState() => GameRoomListState();
+}
+
+class GameRoomListState extends State<GameRoomList> {
+  List<GameRoom> gameRooms = [];
+  late LightWebSocketController lightWebSocketController;
+
+  Timer? timer;
+
+  @override
+  void initState() {
+    super.initState();
+    lightWebSocketController =
+        LightWebSocketController('ws://54.180.157.115:3000', this);
+    print("connect");
+
+    lightWebSocketController.getRooms("temp");
+    startPeriodicUpdate();
+  }
+
+  void startPeriodicUpdate() {
+    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      lightWebSocketController.getRooms("1234");
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    lightWebSocketController.close();
+    print("close");
+    super.dispose();
+  }
+
+  void setGameRooms(List<dynamic> gameRoomList) async {
+    List<GameRoom> temp = [];
+    for (int i = 0; i < gameRoomList.length; i++) {
+      dynamic userinfo = await getData(
+          "http://54.180.157.115:3001/api/user/${gameRoomList[i]}");
+      temp.add(GameRoom(userinfo["name"], userinfo["win"], userinfo["lose"],
+          userinfo["tier"], userinfo["tierPoint"], userinfo["id"]));
+    }
+    if (mounted) {
+      setState(() {
+        gameRooms = temp;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    lightWebSocketController.getRooms("1234");
     return gameRooms.isNotEmpty
         ? ListView.builder(
             itemCount: gameRooms.length,
@@ -374,39 +416,19 @@ class GameRoomList extends StatelessWidget {
                     '${gameRooms[index].win}승 ${gameRooms[index].lose}패 ${gameRooms[index].tier} ${gameRooms[index].tierPoint}',
                     style: const TextStyle(fontFamily: 'RetroFont')),
                 onTap: () {
-                  (gameRooms.isEmpty || userinfo == null)
-                      ? showDialog(
-                          context: context,
-                          builder: (context) => GameRoomDetail(
-                            room: gameRooms[index],
-                            userinfo: userinfo,
-                          ),
-                        )
-                      : showDialog(
-                          context: context,
-                          builder: (context) => GameRoomDetail(
-                            room:
-                                GameRoom("게임이 존재하지 않습니다", 0, 0, "NONE", 0, ""),
-                            userinfo: userinfo,
-                          ),
-                        );
+                  showDialog(
+                    context: context,
+                    builder: (context) => GameRoomDetail(
+                      room: gameRooms[index],
+                      userinfo: widget.userinfo,
+                      lightWebSocketController: lightWebSocketController,
+                    ),
+                  );
                 },
               );
             },
           )
         : const Center(child: CircularProgressIndicator());
-  }
-
-  void setGameRooms(List<dynamic> gameRoomList) async {
-    List<GameRoom> temp = [];
-
-    for (int i = 0; i < gameRoomList.length; i++) {
-      dynamic userinfo = await getData(
-          "http://54.180.157.115:3001/api/user/${gameRoomList[i]}");
-      temp.add(GameRoom(userinfo["name"], userinfo["win"], userinfo["lose"],
-          userinfo["tier"], userinfo["tierPoint"], userinfo["id"]));
-    }
-    gameRooms = temp;
   }
 }
 
@@ -490,8 +512,12 @@ class UserDetail extends StatelessWidget {
 class GameRoomDetail extends StatelessWidget {
   final GameRoom room;
   final dynamic userinfo;
-
-  const GameRoomDetail({super.key, required this.room, this.userinfo});
+  final LightWebSocketController lightWebSocketController;
+  const GameRoomDetail(
+      {super.key,
+      required this.room,
+      this.userinfo,
+      required this.lightWebSocketController});
 
   @override
   Widget build(BuildContext context) {
@@ -505,26 +531,23 @@ class GameRoomDetail extends StatelessWidget {
         ],
       ),
       actions: [
-        (room.id == "")
-            ? TextButton(onPressed: () {}, child: Text(""))
-            : TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => VolleyballGameWidget(
-                        role: 'visitor',
-                        myId: userinfo["id"],
-                        hostId: room.id,
-                        userinfo: userinfo,
-                      ),
-                    ),
-                  );
-                },
-                child: const Text('입장하기',
-                    style: TextStyle(fontFamily: 'RetroFont')),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => VolleyballGameWidget(
+                  role: 'visitor',
+                  myId: userinfo["id"],
+                  hostId: room.id,
+                  userinfo: userinfo,
+                ),
               ),
+            );
+          },
+          child: const Text('입장하기', style: TextStyle(fontFamily: 'RetroFont')),
+        ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();

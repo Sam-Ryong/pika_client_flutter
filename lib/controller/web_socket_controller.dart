@@ -28,9 +28,11 @@ class WebSocketController {
           handleReady(game, data["visitor"]);
         } else if (type == "point") {
           if (data["role"] == "host") {
-            game.hostScore.increase();
+            game.ball.where = true;
+            game.hostScore.increase(true);
           } else if (data["role"] == "visitor") {
-            game.visitorScore.increase();
+            game.ball.where = false;
+            game.visitorScore.increase(false);
           }
         } else if (type == "sound") {
           if (game.playSounds) {
@@ -219,6 +221,7 @@ class WebSocketController {
   }
 
   void handleReady(VolleyballGame game, String id) {
+    game.dialog.closeDialog();
     game.isVisitorReady = true;
     game.enemyId = id;
     game.ready1.makeLarge();

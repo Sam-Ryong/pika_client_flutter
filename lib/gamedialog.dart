@@ -58,9 +58,9 @@ class VisitorEnterDialog extends StatelessWidget {
       VolleyballGame game, bool permission, BuildContext context) {
     game.webSocketManager.handleRoomAccess(hostId, myId, permission);
     Navigator.of(context, rootNavigator: true).pop();
-    if (permission) {
-      dialog.closeDialog();
-    }
+    // if (permission) {
+    //   dialog.closeDialog();
+    // }
   }
 }
 
