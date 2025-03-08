@@ -1,13 +1,19 @@
-
 # **피카츄 배구 모바일/온라인 WebSocket 서버**
 
 WebSocket을 이용하여 두 명의 게이머가 실시간으로 **플레이어의 위치(position), 방향(direction), 배구공(몬스터볼)의 위치(position) 및 속도(velocity)** 를 동기화함으로써 **물리적으로 떨어져 있는 두 플레이어가 동일한 화면을 보며 게임을 즐길 수 있도록 구현**합니다. 또한, **게임 방 생성 및 관리(입장, 거절 등)** 기능도 제공합니다.
 
 ---
 
+## **🛠 사용 기술**
+
+![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) 
+![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)
+
+
 ## **🎮 Demo Video (YouTube)**
 
-
+[![Video Label](https://img.youtube.com/vi/CDBbBEOb3vc/maxresdefault.jpg)](https://youtu.be/CDBbBEOb3vc?t=0s)
 
 ---
 
@@ -73,7 +79,8 @@ HTTP가 아닌 WebSocket을 사용한 이유는 **실시간성**과 **양방향 
 ## **🔗 프로젝트 저장소 (GitHub Repositories)**
 
 - 🖥️ **User Data Server Code (Node.js)** → [pika\_server\_nodejs](https://github.com/Sam-Ryong/pika_server_nodejs)
-- 📱 **Game Server Code** → [pika\_ws\_game\_server](https://github.com/Sam-Ryong/pika_ws_game_server)
+- 📱 **Flutter Client Code** → [pika\_client\_flutter](https://github.com/Sam-Ryong/pika_client_flutter)
+- 🖥️ **Flutter Client Code** → [pika\_ws\_game\_server](https://github.com/Sam-Ryong/pika_ws_game_server)
 
 ---
 
